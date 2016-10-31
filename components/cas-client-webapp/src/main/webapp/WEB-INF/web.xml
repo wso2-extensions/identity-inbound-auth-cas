@@ -27,7 +27,7 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>https://localhost:8080</param-value>
+            <param-value>https://localhost:8081</param-value>
         </init-param>
     </filter>
     <filter>
@@ -39,7 +39,7 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>https://localhost:8080</param-value>
+            <param-value>https://localhost:8081</param-value>
         </init-param>
         <init-param>
             <param-name>redirectAfterValidation</param-name>
