@@ -1,0 +1,15 @@
+This is sample java web application that exercises the CAS protocol features via the Java CAS Client.
+
+Configure:
+
+1. Adjust the url endpoints of the CAS server and the application server in the web.xml file as following.
+    The casServerLoginUrl of the CAS Authentication Filter points to CAS node 1 (i.e https://localhost:9443/identity/cas/login).
+    The casServerUrlPrefix of the CAS Validation Filter points to CAS node 2 (i.e https://localhost:9443/identity/cas)
+    For both of the above filters, the serverName should always point to the location where this sample application
+    (cas-client-webapp) is deployed (i.e https://localhost:8080).
+
+2. Build the war using "mvn clean install"
+
+3. Pull up the URL https://[server-address]/cas-client-webapp in your browser.
+   You'll immediately be redirected to the CAS server login page, and back to the application with authentication
+   details and attributes displayed in the index.jsp file.
