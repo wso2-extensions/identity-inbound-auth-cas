@@ -18,13 +18,11 @@
 -->
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
         <version>1</version>
     </parent>
-
     <groupId>org.wso2.carbon.identity</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>identity-inbound-auth-cas</artifactId>
@@ -32,10 +30,14 @@
     <packaging>pom</packaging>
     <name>WSO2 Carbon CAS</name>
     <description>
-
     </description>
     <url>http://wso2.org</url>
-
+    <scm>
+        <url>https://github.com/wso2-extensions/identity-inbound-auth-cas.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/identity-inbound-auth-cas.git</developerConnection>
+        <connection>scm:git:https://github.com/wso2-extensions/identity-inbound-auth-cas.git</connection>
+        <tag>HEAD</tag>
+    </scm>
     <dependencyManagement>
         <dependencies>
             <dependency>
