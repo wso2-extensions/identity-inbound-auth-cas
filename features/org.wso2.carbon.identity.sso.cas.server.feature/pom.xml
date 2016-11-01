@@ -16,16 +16,17 @@
 ~  specific language governing permissions and limitations
 ~  under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <groupId>org.wso2.carbon.identity</groupId>
-        <artifactId>identity-inbound-auth-cas</artifactId>
+        <groupId>org.wso2.carbon.extension.identity.authenticator</groupId>
+        <artifactId>org.wso2.carbon.extension.identity.authenticator.inbound.cas</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>5.1.4-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.wso2.carbon.identity.sso.cas.server.feature</artifactId>
+    <artifactId>org.wso2.carbon.extension.identity.sso.cas.server.feature</artifactId>
     <packaging>pom</packaging>
     <name>WSO2 Carbon - CAS Single Sign-On Server Feature</name>
     <url>http://wso2.org</url>
@@ -33,9 +34,9 @@
     </description>
     <dependencies>
         <dependency>
-            <groupId>org.wso2.carbon.identity</groupId>
-            <artifactId>org.wso2.carbon.identity.sso.cas</artifactId>
-            <version>5.1.4-SNAPSHOT</version>
+            <groupId>org.wso2.carbon.extension.identity.authenticator</groupId>
+            <artifactId>org.wso2.carbon.extension.identity.sso.cas</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <build>
@@ -52,7 +53,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.wso2.carbon.identity.sso.cas.server</id>
+                            <id>org.wso2.carbon.extension.identity.sso.cas.server</id>
                             <propertiesFile>../feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -61,7 +62,7 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.wso2.carbon.identity:org.wso2.carbon.identity.sso.cas</bundleDef>
+                                <bundleDef>org.wso2.carbon.extension.identity.authenticator:org.wso2.carbon.extension.identity.sso.cas</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core:compatible:${carbon.kernel.version}
@@ -96,9 +97,9 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="src/main/resources" />
-                                <delete dir="src/main" />
-                                <delete dir="src" />
+                                <delete dir="src/main/resources"/>
+                                <delete dir="src/main"/>
+                                <delete dir="src"/>
                             </tasks>
                         </configuration>
                         <goals>
