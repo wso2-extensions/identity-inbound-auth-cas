@@ -20,18 +20,10 @@ package org.wso2.carbon.identity.sso.cas.constants;
 public class CASSSOConstants {
     public static final String CAS_SSO = "cas";
     public static final String CAS_SERVICE_URL = "Service Url";
-    public static final String SERVICE = "casServiceUrl";
     public static final String SERVICE_TICKET_ARGUMENT = "ticket";
     public static final String SERVICE_PROVIDER_ARGUMENT = "service";
-    public static final String ASSRTN_CONSUMER_URL = "ACSUrl";
-    public static final String SERVICE_TICKET_ID = "serviceTicketId";
-    public static final String CAS_RESP = "CASResponse";
     public static final String STATUS = "status";
     public static final String STATUS_MSG = "statusMsg";
-    public static final String DEFAULT_ENCODING = "UTF-8";
-    public static final String CUSTOM_RESOURCE_BUNDLE = "org.wso2.carbon.identity.sso.cas.i18n.custom.Resources";
     public static final String RESOURCE_BUNDLE = "org.wso2.carbon.identity.sso.cas.i18n.Resources";
     public static final String NOTIFICATION_ENDPOINT = "/authenticationendpoint/generic-exception-response.jsp";
-
-
 }

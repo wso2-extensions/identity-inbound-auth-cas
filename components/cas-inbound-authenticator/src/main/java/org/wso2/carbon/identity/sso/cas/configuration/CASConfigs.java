@@ -17,14 +17,12 @@
  */
 package org.wso2.carbon.identity.sso.cas.configuration;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.Property;
 import org.wso2.carbon.identity.application.mgt.AbstractInboundAuthenticatorConfig;
 import org.wso2.carbon.identity.base.IdentityConstants;
 import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
-
 
 public class CASConfigs extends AbstractInboundAuthenticatorConfig {
 
@@ -61,7 +59,7 @@ public class CASConfigs extends AbstractInboundAuthenticatorConfig {
         appType.setDisplayName(IdentityConstants.ServerConfig.WELLKNOWN_APPLICATION_TYPE);
 
         Property service = new Property();
-        service.setName(CASSSOConstants.SERVICE);
+        service.setName(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
         service.setDisplayName(CASSSOConstants.CAS_SERVICE_URL);
 
         return new Property[]{appType, service};
@@ -69,22 +67,6 @@ public class CASConfigs extends AbstractInboundAuthenticatorConfig {
 
     @Override
     public String getRelyingPartyKey() {
-        return CASSSOConstants.SERVICE;
-    }
-
-    public String getInboundAuthTypeFromConfig() {
-        Property[] configurationProperties = this.getConfigurationProperties();
-        if (configurationProperties != null) {
-            Property[] arr$ = configurationProperties;
-            int len$ = configurationProperties.length;
-            for (int i$ = 0; i$ < len$; ++i$) {
-                Property property = arr$[i$];
-                if (property != null && StringUtils.isNotBlank(property.getName()) &&
-                        property.getName().equals(IdentityConstants.ServerConfig.WELLKNOWN_APPLICATION_TYPE)) {
-                    return property.getValue();
-                }
-            }
-        }
-        return null;
+        return CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
     }
 }

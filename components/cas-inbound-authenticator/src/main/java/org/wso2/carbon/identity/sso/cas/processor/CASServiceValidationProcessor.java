@@ -56,7 +56,7 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
 
     @Override
     public boolean canHandle(IdentityRequest identityRequest) {
-        if (identityRequest instanceof CASServiceValidateRequest && ((CASServiceValidateRequest) identityRequest).getServiceRequest
+        if (identityRequest instanceof CASServiceValidateRequest  && ((CASServiceValidateRequest) identityRequest).getServiceRequest
                 () != null && ((CASServiceValidateRequest) identityRequest).getServiceTicket() != null) {
             return true;
         }

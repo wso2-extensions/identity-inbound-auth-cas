@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityMessageContext;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityResponse;
+import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.base.IdentityException;
@@ -95,11 +96,13 @@ public class CASServiceValidationResponse extends CASResponse {
                                         CASErrorConstants.INVALID_SERVICE_MESSAGE, req.getLocale()), serviceProviderUrl, null);
                     } else {
                         ServiceTicket serviceTicket = CASSSOUtil.consumeServiceTicket(serviceTicketId);
-                        String principal = serviceTicket.getParentTicket().getPrincipal();
-                        ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(serviceProviderUrl, principal);
+                        AuthenticationResult authenticationResult = serviceTicket.getParentTicket().getAuthenticationResult();
+                        ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(serviceProviderUrl,
+                                String.valueOf(authenticationResult.getSubject()));
                         ClaimMapping[] claimMapping = serviceProvider.getClaimConfig().getClaimMappings();
-                        String attributesXml = CASSSOUtil.buildAttributesXml(principal, claimMapping);
-                        responseXml = CASSSOUtil.buildSuccessResponse(principal, attributesXml);
+                        String attributesXml = CASSSOUtil.buildAttributesXml(authenticationResult, claimMapping);
+                        responseXml = CASSSOUtil.buildSuccessResponse(String.valueOf(authenticationResult.getSubject()),
+                                attributesXml);
                     }
                 } else
                     throw CAS2ClientException.error("ServiceTicket is not valid", CASErrorConstants.INVALID_TICKET_CODE,
@@ -116,4 +119,3 @@ public class CASServiceValidationResponse extends CASResponse {
         }
     }
 }
-

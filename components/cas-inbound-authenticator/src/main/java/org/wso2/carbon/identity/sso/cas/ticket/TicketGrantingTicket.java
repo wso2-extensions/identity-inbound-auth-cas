@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.identity.sso.cas.ticket;
 
+import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.sso.cas.constants.TicketConstants;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
@@ -35,12 +36,12 @@ public class TicketGrantingTicket extends AbstractTicket {
     private boolean expired = false;
 
     private Map<String, ServiceTicket> serviceTickets;
-    private String principal;
+    private AuthenticationResult authenticationResult;
 
-    public TicketGrantingTicket(String principal, boolean proxyRequest) {
+    public TicketGrantingTicket(AuthenticationResult authenticationResult, boolean proxyRequest) {
         super(proxyRequest ? TicketConstants.PROXY_GRANTING_TICKET_PREFIX : TicketConstants.TICKET_GRANTING_TICKET_PREFIX, proxyRequest);
         serviceTickets = new HashMap<String, ServiceTicket>();
-        this.principal = principal;
+        this.authenticationResult = authenticationResult;
     }
 
     public synchronized ServiceTicket grantServiceTicket(final String service) {
@@ -73,7 +74,7 @@ public class TicketGrantingTicket extends AbstractTicket {
         return expired;
     }
 
-    public String getPrincipal() {
-        return principal;
+    public AuthenticationResult getAuthenticationResult(){
+        return authenticationResult;
     }
 }
