@@ -80,7 +80,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         if (authnResult.isAuthenticated()) {
             String ticketGrantingTicketId = getTicketGrantingTicketId(identityRequest);
             if (ticketGrantingTicketId == null) {
-                ticketGrantingTicket = CASSSOUtil.createTicketGrantingTicket(String.valueOf(authnResult.getSubject()), false);
+                ticketGrantingTicket = CASSSOUtil.createTicketGrantingTicket(authnResult, false);
             } else { // Existing TGT found
                 ticketGrantingTicket = CASSSOUtil.getTicketGrantingTicket(ticketGrantingTicketId);
             }

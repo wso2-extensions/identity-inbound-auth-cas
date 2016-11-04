@@ -23,6 +23,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.wso2.carbon.CarbonException;
 import org.wso2.carbon.core.util.AnonymousSessionUtil;
+import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
 import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRequestConfig;
@@ -30,7 +31,6 @@ import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.sso.cas.cache.*;
-import org.wso2.carbon.identity.sso.cas.configuration.CASConfigs;
 import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
 import org.wso2.carbon.identity.sso.cas.exception.CASIdentityException;
@@ -49,6 +49,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -132,11 +133,6 @@ public class CASSSOUtil {
         return serviceProvider;
     }
 
-    public static String getAuthType() {
-        CASConfigs config = new CASConfigs();
-        return config.getInboundAuthTypeFromConfig();
-    }
-
     public static String getAcsUrl(String servicProviderUrl, String username) throws CAS2ClientException {
         ServiceProvider serviceProvider;
         String acsUrl = null;
@@ -203,8 +199,8 @@ public class CASSSOUtil {
         return ticket;
     }
 
-    public static TicketGrantingTicket createTicketGrantingTicket(String username, boolean proxyRequest) {
-        TicketGrantingTicket ticket = new TicketGrantingTicket(username, proxyRequest);
+    public static TicketGrantingTicket createTicketGrantingTicket(AuthenticationResult authenticationResult, boolean proxyRequest) {
+        TicketGrantingTicket ticket = new TicketGrantingTicket(authenticationResult, proxyRequest);
         TicketGrantingTicketCache cache = TicketGrantingTicketCache.getInstance();
         TicketGrantingTicketCacheEntry entry = new TicketGrantingTicketCacheEntry();
         entry.setTicketGrantingTicket(ticket);
@@ -241,9 +237,10 @@ public class CASSSOUtil {
         }
     }
 
-    public static Map<String, String> getUserClaimValues(String username, ClaimMapping[] claimMappings, String profile)
+    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings, String profile)
             throws IdentityException {
         try {
+            String username = String.valueOf(result.getSubject());
             List<String> requestedClaims = new ArrayList<String>();
             List<String> mappedClaims = new ArrayList<String>();
 
@@ -257,22 +254,44 @@ public class CASSSOUtil {
 
             // Get all supported claims
             ClaimManager claimManager = userRealm.getClaimManager();
-            org.wso2.carbon.user.api.ClaimMapping[] mappings = claimManager.getAllSupportClaimMappingsByDefault();
-
+            org.wso2.carbon.user.api.ClaimMapping[] mappings = claimManager.getAllClaimMappings();
             for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
                 requestedClaims.add(claimMapping.getClaim().getClaimUri());
+                log.debug("adding requested claim: " + claimMapping.getClaim().getClaimUri());
             }
 
             // Get claim values for the user
-            UserStoreManager userStoreManager = userRealm.getUserStoreManager();
+            UserStoreManager userStoreManager = null;
+            boolean localAuthentication = false;
+            try {
+                userStoreManager = userRealm.getUserStoreManager();
+                localAuthentication = userStoreManager.isExistingUser(username);
+            }
+            catch (UserStoreException e) {
+                // User came from federated authentciation
+                log.warn ("Error while retrieving the user from federated authentication, e");
+            }
             username = MultitenantUtils.getTenantAwareUsername(username);
             log.debug("getUserClaimValues: username=" + username);
-            Map<String, String> localClaimValues = userStoreManager.getUserClaimValues(username,
-                    requestedClaims.toArray(new String[requestedClaims.size()]), profile);
+            Map<String, String> localClaimValues = new HashMap<String, String>();
+
+            if (userStoreManager == null || !localAuthentication) {
+                Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
+                if (userAttributes != null) {
+                    for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
+                        log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
+                        localClaimValues.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+                    }
+                }
+            } else {
+                localClaimValues = userStoreManager.getUserClaimValues(username,
+                        requestedClaims.toArray(new String[requestedClaims.size()]), profile);
+            }
 
             String localClaimValue = null;
             String localClaimUri = null;
             String remoteClaimUri = null;
+            String remoteClaimValue = null;
 
             // Remove the original claim URI and add the new mapped claim URI
             for (ClaimMapping claimMapping : claimMappings) {
@@ -280,12 +299,15 @@ public class CASSSOUtil {
                 localClaimValue = localClaimValues.get(localClaimUri);
                 remoteClaimUri = claimMapping.getRemoteClaim().getClaimUri();
 
+                remoteClaimValue = localClaimValues.get(remoteClaimUri);
                 log.debug("getUserClaimValues: localClaimUri=" + localClaimUri + " ==> localClaimValue=" +
-                        localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri);
-
+                        localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri + " ==> remoteClaimValue=" + remoteClaimValue);
                 if (localClaimValue != null) {
                     localClaimValues.remove(localClaimUri);
                     localClaimValues.put(remoteClaimUri, localClaimValue);
+                } else if (remoteClaimValue != null) {
+                    localClaimValues.remove(localClaimUri);
+                    localClaimValues.put(remoteClaimUri, remoteClaimValue);
                 }
             }
 
@@ -294,11 +316,14 @@ public class CASSSOUtil {
                 localClaimUri = claimMapping.getClaim().getClaimUri();
                 localClaimValue = localClaimValues.get(localClaimUri);
                 remoteClaimUri = claimMapping.getMappedAttribute();
-
+                remoteClaimValue = localClaimValues.get(remoteClaimUri);
                 // Avoid re-inserting a mapped claim
                 if (localClaimValue != null && !mappedClaims.contains(localClaimUri)) {
                     localClaimValues.remove(localClaimUri);
                     localClaimValues.put(remoteClaimUri, localClaimValue);
+                } else if (remoteClaimValue != null) {
+                    localClaimValues.remove(localClaimUri);
+                    localClaimValues.put(remoteClaimUri, remoteClaimValue);
                 }
             }
 
@@ -317,10 +342,9 @@ public class CASSSOUtil {
         }
     }
 
-    public static String buildAttributesXml(String username, ClaimMapping[] claimMapping) throws IdentityException {
+    public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping) throws IdentityException {
         StringBuilder attributesXml = new StringBuilder();
-
-        Map<String, String> claims = CASSSOUtil.getUserClaimValues(username, claimMapping, null);
+        Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping, null);
         for (Map.Entry<String, String> entry : claims.entrySet()) {
             String entryKey = entry.getKey().replaceAll(" ", "_");
             attributesXml.append(String.format(attributeTemplate, entryKey, entry.getValue(), entryKey));
