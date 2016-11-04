@@ -266,8 +266,10 @@ public class CASSSOUtil {
             try {
                 userStoreManager = userRealm.getUserStoreManager();
                 localAuthentication = userStoreManager.isExistingUser(username);
-            } catch (Exception e) {
+            }
+            catch (UserStoreException e) {
                 // User came from federated authentciation
+                log.warn ("Error while retrieving the user from federated authentication, e");
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
             log.debug("getUserClaimValues: username=" + username);
