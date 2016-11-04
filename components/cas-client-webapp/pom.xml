@@ -21,11 +21,11 @@
         <groupId>org.wso2.carbon.extension.identity.authenticator</groupId>
         <artifactId>org.wso2.carbon.extension.identity.authenticator.inbound.cas</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cas-client-webapp</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.0</version>
     <packaging>war</packaging>
     <name>CAS Example Java Web App</name>
     <description>A sample web application that exercises the CAS protocol features via the Java CAS Client.
