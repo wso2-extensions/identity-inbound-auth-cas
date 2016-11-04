@@ -48,7 +48,7 @@
                             <publishArtifactRepository>true</publishArtifactRepository>
                             <featureArtifacts>
                                 <featureArtifactDef>
-                                    org.wso2.carbon.extension.identity.authenticator:org.wso2.carbon.extension.identity.sso.cas.feature:1.0.0-SNAPSHOT
+                                    org.wso2.carbon.extension.identity.authenticator:org.wso2.carbon.extension.identity.sso.cas.feature:1.0.1-SNAPSHOT
                                 </featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
