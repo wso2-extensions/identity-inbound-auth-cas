@@ -98,7 +98,7 @@ public class CASServiceValidationResponse extends CASResponse {
                         ServiceTicket serviceTicket = CASSSOUtil.consumeServiceTicket(serviceTicketId);
                         AuthenticationResult authenticationResult = serviceTicket.getParentTicket().getAuthenticationResult();
                         ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(serviceProviderUrl,
-                                String.valueOf(authenticationResult.getSubject()));
+                                String.valueOf(messageContext.getRequest().getTenantDomain()));
                         ClaimMapping[] claimMapping = serviceProvider.getClaimConfig().getClaimMappings();
                         String attributesXml = CASSSOUtil.buildAttributesXml(authenticationResult, claimMapping);
                         responseXml = CASSSOUtil.buildSuccessResponse(String.valueOf(authenticationResult.getSubject()),
