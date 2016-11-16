@@ -30,7 +30,12 @@ import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRe
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.sso.cas.cache.*;
+import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCache;
+import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCacheEntry;
+import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCacheKey;
+import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCache;
+import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCacheEntry;
+import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCacheKey;
 import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
 import org.wso2.carbon.identity.sso.cas.exception.CASIdentityException;
@@ -110,17 +115,11 @@ public class CASSSOUtil {
         CASSSOUtil.httpService = httpService;
     }
 
-    public static ServiceProvider getServiceProviderByUrl(String serviceProviderUrl, String username) throws CASIdentityException {
+    public static ServiceProvider getServiceProviderByUrl(String serviceProviderUrl, String tenantDomain) throws
+            CASIdentityException {
         ServiceProvider serviceProvider = null;
-        String tenantDomain = null;
         ApplicationManagementService appInfo = ApplicationManagementService.getInstance();
         try {
-
-            if (username != null) {
-                tenantDomain = MultitenantUtils.getTenantDomain(username);
-                log.debug("getServiceProviderByUrl: tenant=" + tenantDomain);
-            }
-
             if (tenantDomain == null) {
                 tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
             }
@@ -133,11 +132,11 @@ public class CASSSOUtil {
         return serviceProvider;
     }
 
-    public static String getAcsUrl(String servicProviderUrl, String username) throws CAS2ClientException {
+    public static String getAcsUrl(String servicProviderUrl, String tenantDomain) throws CAS2ClientException {
         ServiceProvider serviceProvider;
         String acsUrl = null;
         try {
-            serviceProvider = getServiceProviderByUrl(servicProviderUrl, username);
+            serviceProvider = getServiceProviderByUrl(servicProviderUrl, tenantDomain);
             for (InboundAuthenticationRequestConfig config : serviceProvider.getInboundAuthenticationConfig().
                     getInboundAuthenticationRequestConfigs()) {
                 acsUrl = config.getInboundAuthKey();
