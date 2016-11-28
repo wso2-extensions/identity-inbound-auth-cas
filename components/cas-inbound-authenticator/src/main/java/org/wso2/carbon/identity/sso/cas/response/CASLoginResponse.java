@@ -26,6 +26,9 @@ import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 
 import javax.servlet.http.Cookie;
 
+/**
+ * To build the CAS login response.
+ */
 public class CASLoginResponse extends CASResponse {
 
     private String redirectUrl;
@@ -39,22 +42,41 @@ public class CASLoginResponse extends CASResponse {
         this.serviceTicketId = ((CASLoginResponseBuilder) builder).serviceTicketId;
     }
 
+    /**
+     * Get the casCookie.
+     * @return the casCookie
+     */
     public Cookie getCasCookie() {
         return casCookie;
     }
 
+    /**
+     * Get the serviceTicketId
+     * @return the serviceTicketId
+     */
     public String getServiceTicketId() {
         return serviceTicketId;
     }
 
+    /**
+     * Get the redirectUrl.
+     * @return the redirectUrl
+     */
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
+    /**
+     * Get the context.
+     * @return context
+     */
     public CASMessageContext getContext() {
         return (CASMessageContext) this.context;
     }
 
+    /**
+     * Inner class for build the CAS login response.
+     */
     public static class CASLoginResponseBuilder extends CASResponseBuilder {
 
         private static Log log = LogFactory.getLog(CASLoginResponseBuilder.class);
@@ -71,16 +93,31 @@ public class CASLoginResponse extends CASResponse {
             return new CASLoginResponse(this);
         }
 
+        /**
+         * Set the serviceTicketId.
+         * @param serviceTicketId the serviceTicketId
+         * @return serviceTicketId
+         */
         public CASLoginResponseBuilder setServiceTicketId(String serviceTicketId) {
             this.serviceTicketId = serviceTicketId;
             return this;
         }
 
+        /**
+         * Set the cookie.
+         * @param cookie the cookie.
+         * @return cookie.
+         */
         public CASLoginResponseBuilder setCasCookie(Cookie cookie) {
             this.casCookie = cookie;
             return this;
         }
 
+        /**
+         * Set the redirectUrl.
+         * @param redirectUrl the redirectUrl
+         * @return redirectUrl
+         */
         public CASLoginResponseBuilder setRedirectUrl(String redirectUrl) {
             this.redirectUrl = redirectUrl;
             return this;

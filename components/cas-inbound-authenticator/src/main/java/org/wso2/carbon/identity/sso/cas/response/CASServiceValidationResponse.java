@@ -34,6 +34,9 @@ import org.wso2.carbon.identity.sso.cas.ticket.ServiceTicket;
 import org.wso2.carbon.identity.sso.cas.util.CASResourceReader;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
+/**
+ * To build the CAS Service Validation Response.
+ */
 public class CASServiceValidationResponse extends CASResponse {
 
     private String responseXml;
@@ -45,18 +48,36 @@ public class CASServiceValidationResponse extends CASResponse {
         this.redirectUrl = ((CASServiceValidationResponseBuilder) builder).redirectUrl;
     }
 
+    /**
+     * Get the Response String.
+     *
+     * @return the responseXml
+     */
     public String getResponseString() {
         return responseXml;
     }
 
+    /**
+     * Get the redirect url
+     *
+     * @return the redirectUrl
+     */
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
+    /**
+     * To get the context
+     *
+     * @return the CASMessageContext.
+     */
     public CASMessageContext getContext() {
         return (CASMessageContext) this.context;
     }
 
+    /**
+     * Inner class for build the CAS service validation response.
+     */
     public static class CASServiceValidationResponseBuilder extends CASResponseBuilder {
         private static Log log = LogFactory.getLog(CASServiceValidationResponseBuilder.class);
         private String responseXml;
@@ -70,16 +91,29 @@ public class CASServiceValidationResponse extends CASResponse {
             return new CASServiceValidationResponse(this);
         }
 
+        /**
+         * Set the redirect url.
+         *
+         * @param redirectUrl the redirectUrl
+         * @return the redirectUrl
+         */
         public CASServiceValidationResponseBuilder setRedirectUrl(String redirectUrl) {
             this.redirectUrl = redirectUrl;
             return this;
         }
 
+        /**
+         * build the response for validation request.
+         *
+         * @return the responseXml
+         */
         public String buildResponse() {
             CASMessageContext messageContext = (CASMessageContext) this.context;
             CASServiceValidateRequest req = messageContext.getValidateRequest();
             try {
-                log.debug("CAS " + req.getRequestURI() + " query string: " + req.getQueryString());
+                if (log.isDebugEnabled()) {
+                    log.debug("CAS " + req.getRequestURI() + " query string: " + req.getQueryString());
+                }
                 String serviceProviderUrl = req.getParameter(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
                 String serviceTicketId = req.getParameter(CASSSOConstants.SERVICE_TICKET_ARGUMENT);
                 if (serviceProviderUrl == null || serviceProviderUrl.trim().length() == 0 || serviceTicketId == null
@@ -114,7 +148,9 @@ public class CASServiceValidationResponse extends CASResponse {
                         CASResourceReader.getInstance().getLocalizedString(
                                 CASErrorConstants.INTERNAL_ERROR_MESSAGE, req.getLocale()));
             }
-            log.debug("CAS " + req.getRequestURI() + " response XML: " + responseXml);
+            if (log.isDebugEnabled()) {
+                log.debug("CAS " + req.getRequestURI() + " response XML: " + responseXml);
+            }
             return responseXml;
         }
     }

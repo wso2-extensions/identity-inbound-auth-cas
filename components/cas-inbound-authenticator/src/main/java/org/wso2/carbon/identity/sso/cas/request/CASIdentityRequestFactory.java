@@ -46,7 +46,7 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
 
     @Override
     public String getName() {
-        return "CASIdentityRequestFactory";
+        return CASSSOConstants.CAS_IDENTITY_REQUEST_FACTORY;
     }
 
     @Override

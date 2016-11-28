@@ -36,7 +36,7 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
 
     @Override
     public String getName() {
-        return "HttpCASResponseFactory";
+        return CASSSOConstants.HTTP_CASRESPONSE_FACTORY;
     }
 
     @Override
@@ -64,6 +64,11 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
         return create(identityResponse);
     }
 
+    /**
+     * Send Response after CAS login gets successful.
+     * @param identityResponse the response
+     * @return the builder
+     */
     private HttpIdentityResponse.HttpIdentityResponseBuilder sendResponse(IdentityResponse identityResponse) {
         CASLoginResponse loginResponse = ((CASLoginResponse) identityResponse);
         HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse
@@ -80,6 +85,11 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
         return builder;
     }
 
+    /**
+     * Send service validation response after validation gets successful.
+     * @param identityResponse the response
+     * @return the builder
+     */
     private HttpIdentityResponse.HttpIdentityResponseBuilder sendServiceValidationResponse(IdentityResponse identityResponse) {
         CASServiceValidationResponse casServiceValidationResponse = ((CASServiceValidationResponse) identityResponse);
         HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse

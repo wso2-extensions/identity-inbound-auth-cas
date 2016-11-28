@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.identity.sso.cas.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
@@ -115,12 +116,19 @@ public class CASSSOUtil {
         CASSSOUtil.httpService = httpService;
     }
 
+    /**
+     * Get the serviceProvider for tenantDomain and serviceProviderUrl
+     * @param serviceProviderUrl the serviceProviderUrl
+     * @param tenantDomain the tenantDomain
+     * @return serviceProvider
+     * @throws CASIdentityException
+     */
     public static ServiceProvider getServiceProviderByUrl(String serviceProviderUrl, String tenantDomain) throws
             CASIdentityException {
         ServiceProvider serviceProvider = null;
         ApplicationManagementService appInfo = ApplicationManagementService.getInstance();
         try {
-            if (tenantDomain == null) {
+            if (StringUtils.isEmpty(tenantDomain)) {
                 tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
             }
             serviceProvider = appInfo.getServiceProviderByClientId(serviceProviderUrl,
@@ -132,6 +140,13 @@ public class CASSSOUtil {
         return serviceProvider;
     }
 
+    /**
+     * Get Acs Url
+     * @param servicProviderUrl the servicProviderUrl
+     * @param tenantDomain the tenantDomain
+     * @return acsUrl
+     * @throws CAS2ClientException
+     */
     public static String getAcsUrl(String servicProviderUrl, String tenantDomain) throws CAS2ClientException {
         ServiceProvider serviceProvider;
         String acsUrl = null;
@@ -147,6 +162,12 @@ public class CASSSOUtil {
         return acsUrl;
     }
 
+    /**
+     * Check the acs url for particular service ticket
+     * @param serviceProviderUrl the serviceProviderUrl
+     * @param serviceTicketId the serviceTicketId
+     * @return true or false
+     */
     public static boolean isValidAcsUrlForServiceTicket(String serviceProviderUrl, String serviceTicketId) {
         String acsUrl = CASSSOUtil.getServiceTicket(serviceTicketId).getService();
         boolean isValidAcsUrl = false;
@@ -156,6 +177,12 @@ public class CASSSOUtil {
         return isValidAcsUrl;
     }
 
+    /**
+     * Get the serviceTicket
+     * @param serviceTicketId the serviceTicketId
+     * @return serviceTicket
+     * @throws TicketNotFoundException
+     */
     public static ServiceTicket getServiceTicket(String serviceTicketId) throws TicketNotFoundException {
         ServiceTicketCache cache = ServiceTicketCache.getInstance();
 
@@ -170,6 +197,11 @@ public class CASSSOUtil {
         }
     }
 
+    /**
+     * Check the validity of serviceTicketId
+     * @param serviceTicketId the serviceTicketId
+     * @return true or false
+     */
     public static boolean isValidServiceTicket(String serviceTicketId) {
         try {
             ServiceTicket serviceTicket = getServiceTicket(serviceTicketId);
@@ -179,6 +211,11 @@ public class CASSSOUtil {
         }
     }
 
+    /**
+     * Consume the ServiceTicket from cache
+     * @param serviceTicketId the serviceTicketId
+     * @return the service ticket
+     */
     public static ServiceTicket consumeServiceTicket(String serviceTicketId) {
         ServiceTicket ticket;
         try {
@@ -198,6 +235,12 @@ public class CASSSOUtil {
         return ticket;
     }
 
+    /**
+     * Create the ticket granting ticket
+     * @param authenticationResult the authenticationResult
+     * @param proxyRequest the proxyRequest
+     * @return ticket
+     */
     public static TicketGrantingTicket createTicketGrantingTicket(AuthenticationResult authenticationResult, boolean proxyRequest) {
         TicketGrantingTicket ticket = new TicketGrantingTicket(authenticationResult, proxyRequest);
         TicketGrantingTicketCache cache = TicketGrantingTicketCache.getInstance();
@@ -211,6 +254,11 @@ public class CASSSOUtil {
         return ticket;
     }
 
+    /**
+     * Store Service ticket cache.
+     * @param ticket ticket
+     */
+
     public static void storeServiceTicket(ServiceTicket ticket) {
         ServiceTicketCache cache = ServiceTicketCache.getInstance();
         ServiceTicketCacheEntry entry = new ServiceTicketCacheEntry();
@@ -221,6 +269,12 @@ public class CASSSOUtil {
         cache.addToCache(key, entry);
     }
 
+    /**
+     * Get the ticket granting ticket
+     * @param ticketGrantingTicketId the ticketGrantingTicketId
+     * @return ticket granting ticket
+     * @throws TicketNotFoundException
+     */
     public static TicketGrantingTicket getTicketGrantingTicket(String ticketGrantingTicketId) throws TicketNotFoundException {
         TicketGrantingTicketCache cache = TicketGrantingTicketCache.getInstance();
 
@@ -236,6 +290,14 @@ public class CASSSOUtil {
         }
     }
 
+    /**
+     * Get the user claim values
+     * @param result the authentication result
+     * @param claimMappings the claim mappings
+     * @param profile the profile
+     * @return localClaimValues
+     * @throws IdentityException
+     */
     public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings, String profile)
             throws IdentityException {
         try {
@@ -341,6 +403,13 @@ public class CASSSOUtil {
         }
     }
 
+    /**
+     * Build the attributes
+     * @param result authentication result
+     * @param claimMapping claimMapping
+     * @return attributesXml
+     * @throws IdentityException
+     */
     public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping) throws IdentityException {
         StringBuilder attributesXml = new StringBuilder();
         Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping, null);

@@ -57,5 +57,4 @@ public class TicketGrantingTicketCacheKey extends CacheKey {
             return false;
         return true;
     }
-
 }

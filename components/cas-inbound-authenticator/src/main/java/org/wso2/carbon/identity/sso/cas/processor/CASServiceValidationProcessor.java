@@ -25,6 +25,7 @@ import org.wso2.carbon.identity.application.authentication.framework.inbound.Ide
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityProcessor;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityRequest;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.request.CASServiceValidateRequest;
 import org.wso2.carbon.identity.sso.cas.response.CASResponse;
@@ -46,7 +47,7 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
 
     @Override
     public String getCallbackPath(IdentityMessageContext context) {
-        return IdentityUtil.getServerURL("identity", false, false);
+        return IdentityUtil.getServerURL(CASSSOConstants.IDENTITY, false, false);
     }
 
     @Override

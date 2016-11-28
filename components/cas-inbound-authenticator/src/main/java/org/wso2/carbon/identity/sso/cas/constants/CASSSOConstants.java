@@ -26,4 +26,9 @@ public class CASSSOConstants {
     public static final String STATUS_MSG = "statusMsg";
     public static final String RESOURCE_BUNDLE = "org.wso2.carbon.identity.sso.cas.i18n.Resources";
     public static final String NOTIFICATION_ENDPOINT = "/authenticationendpoint/generic-exception-response.jsp";
+    public static final String HOSTNAME = "HostName";
+    public static final String HTTP_CASRESPONSE_FACTORY = "HttpCASResponseFactory";
+    public static final String CAS_IDENTITY_REQUEST_FACTORY = "CASIdentityRequestFactory";
+    public static final String CAS_SSO_LOGIN_PROCESSOR = "SSOLoginProcessor";
+    public static final String IDENTITY = "identity";
 }

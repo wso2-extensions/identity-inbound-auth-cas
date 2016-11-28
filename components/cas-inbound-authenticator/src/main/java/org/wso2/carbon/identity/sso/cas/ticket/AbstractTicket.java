@@ -35,7 +35,9 @@ public abstract class AbstractTicket implements Serializable {
         uniqueId = TicketIdGenerator.generate(ticketSeed);
         this.proxyRequest = proxyRequest;
         updateState();
-        log.debug("CAS ticket created(proxy=" + proxyRequest + "): " + getId());
+        if(log.isDebugEnabled()) {
+            log.debug("CAS ticket created(proxy=" + proxyRequest + "): " + getId());
+        }
     }
 
     public String getId() {
