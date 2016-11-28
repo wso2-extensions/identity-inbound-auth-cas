@@ -265,11 +265,31 @@ public class CASSSOUtil {
             }
 
             // Get claim values for the user
-            UserStoreManager userStoreManager = userRealm.getUserStoreManager();
+            UserStoreManager userStoreManager = null;
+            boolean localAuthentication = false;
+            try {
+                userStoreManager = userRealm.getUserStoreManager();
+                localAuthentication = userStoreManager.isExistingUser(username);
+            } catch (UserStoreException e) {
+                // User came from federated authentication
+                log.warn("Error while retrieving the user from federated authentication, e");
+            }
             username = MultitenantUtils.getTenantAwareUsername(username);
             log.debug("getUserClaimValues: username=" + username);
-            Map<String, String> localClaimValues = userStoreManager.getUserClaimValues(username,
-                    requestedClaims.toArray(new String[requestedClaims.size()]), profile);
+            Map<String, String> localClaimValues = new HashMap<String, String>();
+
+            if (userStoreManager == null || !localAuthentication) {
+                Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
+                if (userAttributes != null) {
+                    for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
+                        log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
+                        localClaimValues.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+                    }
+                }
+            } else {
+                localClaimValues = userStoreManager.getUserClaimValues(username,
+                        requestedClaims.toArray(new String[requestedClaims.size()]), profile);
+            }
 
             Map<String, String> requestedClaim = new HashMap<String, String>();
             String localClaimValue = null;
