@@ -45,7 +45,7 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
 
     @Override
     public int getPriority() {
-        return 3;
+        return CASSSOConstants.SP_INIT_PROCESSOR_PRIORITY;
     }
 
     @Override

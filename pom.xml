@@ -28,8 +28,6 @@
     <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>WSO2 Carbon CAS</name>
-    <description>
-    </description>
     <url>http://wso2.org</url>
     <scm>
         <url>https://github.com/wso2-extensions/identity-inbound-auth-cas.git</url>

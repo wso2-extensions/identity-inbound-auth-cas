@@ -31,4 +31,11 @@ public class CASSSOConstants {
     public static final String CAS_IDENTITY_REQUEST_FACTORY = "CASIdentityRequestFactory";
     public static final String CAS_SSO_LOGIN_PROCESSOR = "SSOLoginProcessor";
     public static final String IDENTITY = "identity";
+    public static final String CAS_CONFIG_NAME = "cas";
+    public static final String CAS_FRIENDLY_NAME = "CAS Configuration";
+    public static final String CAS_BASEPATH = "/cas";
+    public static final int VALIDATION_PROCESSOR_PRIORITY = 1;
+    public static final int SP_INIT_PROCESSOR_PRIORITY = 3;
+    public static final int CAS_LOGIN_PROCESSOR_PRIORITY = 2;
+    public static final String CAS_VALIDATION_PROCESSOR = "CASServiceValidationProcessor";
 }

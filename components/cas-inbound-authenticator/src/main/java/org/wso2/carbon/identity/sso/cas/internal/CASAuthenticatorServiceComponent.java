@@ -72,12 +72,9 @@ public class CASAuthenticatorServiceComponent {
     protected void activate(ComponentContext ctxt) {
 
         CASSSOUtil.setBundleContext(ctxt.getBundleContext());
-        ctxt.getBundleContext().registerService(HttpIdentityRequestFactory.class.getName(), new
-                CASIdentityRequestFactory(), null);
-        ctxt.getBundleContext().registerService(HttpIdentityResponseFactory.class.getName(), new
-                HttpCASResponseFactory(), null);
-        ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SPInitSSOAuthnRequestProcessor
-                (), null);
+        ctxt.getBundleContext().registerService(HttpIdentityRequestFactory.class.getName(), new CASIdentityRequestFactory(), null);
+        ctxt.getBundleContext().registerService(HttpIdentityResponseFactory.class.getName(), new HttpCASResponseFactory(), null);
+        ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SPInitSSOAuthnRequestProcessor(), null);
         ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SSOLoginProcessor(), null);
         ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new CASServiceValidationProcessor(), null);
         CASConfigs cas = new CASConfigs();
@@ -180,4 +177,3 @@ public class CASAuthenticatorServiceComponent {
         CASSSOUtil.setConfigCtxService(null);
     }
 }
-

@@ -19,6 +19,9 @@ package org.wso2.carbon.identity.sso.cas.cache;
 
 import org.wso2.carbon.identity.application.common.cache.CacheKey;
 
+/**
+ * Maintain the cache key
+ */
 public class TicketGrantingTicketCacheKey extends CacheKey {
 
     private static final long serialVersionUID = -5089733059758218086L;

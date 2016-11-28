@@ -71,8 +71,7 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
      */
     private HttpIdentityResponse.HttpIdentityResponseBuilder sendResponse(IdentityResponse identityResponse) {
         CASLoginResponse loginResponse = ((CASLoginResponse) identityResponse);
-        HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse
-                .HttpIdentityResponseBuilder();
+        HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse.HttpIdentityResponseBuilder();
         Cookie cookie = loginResponse.getCasCookie();
         String serviceTicketId = loginResponse.getServiceTicketId();
         String redirectUrl = loginResponse.getRedirectUrl();
@@ -92,8 +91,7 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
      */
     private HttpIdentityResponse.HttpIdentityResponseBuilder sendServiceValidationResponse(IdentityResponse identityResponse) {
         CASServiceValidationResponse casServiceValidationResponse = ((CASServiceValidationResponse) identityResponse);
-        HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse
-                .HttpIdentityResponseBuilder();
+        HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse.HttpIdentityResponseBuilder();
         String responseString = casServiceValidationResponse.getResponseString();
         String redirectUrl = casServiceValidationResponse.getRedirectUrl();
         builder.setBody(responseString);

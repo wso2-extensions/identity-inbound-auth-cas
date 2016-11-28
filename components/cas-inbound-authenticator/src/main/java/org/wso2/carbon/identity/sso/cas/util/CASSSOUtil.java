@@ -429,14 +429,11 @@ public class CASSSOUtil {
      */
     public static String buildSuccessResponse(String userId, String userAttributesXml) {
         StringBuilder responseAttributes = new StringBuilder();
-
         // Strip the domain prefix from the username for applications
         // that rely on the raw uid
         String rawUserId = UserCoreUtil.removeDomainFromName(userId);
-
         // user ID is always included
         responseAttributes.append(String.format(userTemplate, rawUserId));
-
         if (userAttributesXml != null) {
             responseAttributes.append(String.format(attributesWrapper, userAttributesXml));
         }

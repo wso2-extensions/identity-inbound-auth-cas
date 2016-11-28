@@ -50,7 +50,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
     }
 
     public int getPriority() {
-        return 2;
+        return CASSSOConstants.CAS_LOGIN_PROCESSOR_PRIORITY;
     }
 
     @Override

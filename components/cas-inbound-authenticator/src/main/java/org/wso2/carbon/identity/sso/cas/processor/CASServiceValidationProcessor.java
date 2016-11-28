@@ -38,11 +38,11 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
 
     @Override
     public String getName() {
-        return "CASServiceValidationProcessor";
+        return CASSSOConstants.CAS_VALIDATION_PROCESSOR;
     }
 
     public int getPriority() {
-        return 1;
+        return CASSSOConstants.VALIDATION_PROCESSOR_PRIORITY;
     }
 
     @Override
@@ -66,7 +66,6 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
 
     @Override
     public CASResponse.CASResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
-
         CASMessageContext messageContext = new CASMessageContext((CASServiceValidateRequest) identityRequest, new
                 HashMap<String, String>());
         String redirectURL = messageContext.getServiceURL();

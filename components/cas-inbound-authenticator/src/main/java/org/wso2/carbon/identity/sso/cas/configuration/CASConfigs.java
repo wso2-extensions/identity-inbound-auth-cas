@@ -35,7 +35,7 @@ public class CASConfigs extends AbstractInboundAuthenticatorConfig {
 
     @Override
     public String getConfigName() {
-        return "cas";
+        return CASSSOConstants.CAS_CONFIG_NAME;
     }
 
     //this is the authType
@@ -46,7 +46,7 @@ public class CASConfigs extends AbstractInboundAuthenticatorConfig {
 
     @Override
     public String getFriendlyName() {
-        return "CAS Configuration";
+        return CASSSOConstants.CAS_FRIENDLY_NAME;
     }
 
     @Override

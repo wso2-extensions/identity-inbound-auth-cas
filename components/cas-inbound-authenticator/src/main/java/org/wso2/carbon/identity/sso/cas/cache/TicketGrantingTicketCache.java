@@ -22,6 +22,9 @@ import org.wso2.carbon.identity.application.common.cache.BaseCache;
 import org.wso2.carbon.identity.application.common.cache.CacheEntry;
 import org.wso2.carbon.identity.application.common.cache.CacheKey;
 
+/**
+ * Maintain the cache for ticket granting ticket
+ */
 public class TicketGrantingTicketCache extends BaseCache<CacheKey, CacheEntry> {
     private static final String SESSION_DATA_CACHE_NAME = "CASTicketGrantingTicketCache";
     private static volatile TicketGrantingTicketCache instance;
@@ -31,6 +34,10 @@ public class TicketGrantingTicketCache extends BaseCache<CacheKey, CacheEntry> {
         super(cacheName);
     }
 
+    /**
+     * Get the instance of chache
+     * @return instance
+     */
     public static TicketGrantingTicketCache getInstance() {
         if (instance == null) {
             synchronized (TicketGrantingTicketCache.class) {

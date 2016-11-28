@@ -22,6 +22,9 @@ import org.wso2.carbon.identity.application.common.cache.BaseCache;
 import org.wso2.carbon.identity.application.common.cache.CacheEntry;
 import org.wso2.carbon.identity.application.common.cache.CacheKey;
 
+/**
+ * To maintain the service ticket in cache.
+ */
 public class ServiceTicketCache extends BaseCache<CacheKey, CacheEntry> {
 
     private static final String SESSION_DATA_CACHE_NAME = "CASServiceTicketCache";
@@ -32,6 +35,10 @@ public class ServiceTicketCache extends BaseCache<CacheKey, CacheEntry> {
         super(cacheName);
     }
 
+    /**
+     * Get an instance of the cache.
+     * @return an instance
+     */
     public static ServiceTicketCache getInstance() {
         if (instance == null) {
             synchronized (ServiceTicketCache.class) {

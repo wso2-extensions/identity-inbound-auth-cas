@@ -20,11 +20,12 @@ package org.wso2.carbon.identity.sso.cas.configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
+import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
 
 public class CASConfiguration {
     private static final String CAS_CONTEXT_PATH = "CAS.ContextPath";
     private static Log log = LogFactory.getLog(CASConfiguration.class);
-    private static String basePath = "/cas"; // Default context path
+    private static String basePath = CASSSOConstants.CAS_BASEPATH; // Default context path
 
     static {
         try {
@@ -36,7 +37,7 @@ public class CASConfiguration {
                 basePath = casBasePath;
             }
         } catch (Exception ex) {
-            log.info("CAS base path not found. Using default value.");
+            log.error("CAS base path not found. Using default value.");
         }
     }
 
