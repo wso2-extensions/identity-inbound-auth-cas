@@ -236,7 +236,8 @@ public class CASSSOUtil {
         }
     }
 
-    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings, String profile)
+    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings,
+                                                         String profile)
             throws IdentityException {
         try {
             String username = String.valueOf(result.getSubject());
@@ -259,16 +260,19 @@ public class CASSSOUtil {
                 log.debug("adding requested claim: " + claimMapping.getClaim().getClaimUri());
             }
 
+            for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
+                requestedClaims.add(claimMapping.getClaim().getClaimUri());
+            }
+
             // Get claim values for the user
             UserStoreManager userStoreManager = null;
             boolean localAuthentication = false;
             try {
                 userStoreManager = userRealm.getUserStoreManager();
                 localAuthentication = userStoreManager.isExistingUser(username);
-            }
-            catch (UserStoreException e) {
-                // User came from federated authentciation
-                log.warn ("Error while retrieving the user from federated authentication, e");
+            } catch (UserStoreException e) {
+                // User came from federated authentication
+                log.warn("Error while retrieving the user from federated authentication, e");
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
             log.debug("getUserClaimValues: username=" + username);
@@ -287,10 +291,10 @@ public class CASSSOUtil {
                         requestedClaims.toArray(new String[requestedClaims.size()]), profile);
             }
 
+            Map<String, String> requestedClaim = new HashMap<String, String>();
             String localClaimValue = null;
             String localClaimUri = null;
             String remoteClaimUri = null;
-            String remoteClaimValue = null;
 
             // Remove the original claim URI and add the new mapped claim URI
             for (ClaimMapping claimMapping : claimMappings) {
@@ -298,32 +302,39 @@ public class CASSSOUtil {
                 localClaimValue = localClaimValues.get(localClaimUri);
                 remoteClaimUri = claimMapping.getRemoteClaim().getClaimUri();
 
-                remoteClaimValue = localClaimValues.get(remoteClaimUri);
-                log.debug("getUserClaimValues: localClaimUri=" + localClaimUri + " ==> localClaimValue=" +
-                        localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri + " ==> remoteClaimValue=" + remoteClaimValue);
+                log.debug("getUserClaimValues: localClaimUri=" + localClaimUri + " ==> localClaimValue="
+                        + localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri);
+
                 if (localClaimValue != null) {
                     localClaimValues.remove(localClaimUri);
                     localClaimValues.put(remoteClaimUri, localClaimValue);
-                } else if (remoteClaimValue != null) {
-                    localClaimValues.remove(localClaimUri);
-                    localClaimValues.put(remoteClaimUri, remoteClaimValue);
                 }
             }
 
             // Remove the original claim URI and add the mapped attribute
-            for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                localClaimUri = claimMapping.getClaim().getClaimUri();
-                localClaimValue = localClaimValues.get(localClaimUri);
-                remoteClaimUri = claimMapping.getMappedAttribute();
-                remoteClaimValue = localClaimValues.get(remoteClaimUri);
-                // Avoid re-inserting a mapped claim
-                if (localClaimValue != null && !mappedClaims.contains(localClaimUri)) {
-                    localClaimValues.remove(localClaimUri);
-                    localClaimValues.put(remoteClaimUri, localClaimValue);
-                } else if (remoteClaimValue != null) {
-                    localClaimValues.remove(localClaimUri);
-                    localClaimValues.put(remoteClaimUri, remoteClaimValue);
+            if (mappedClaims.isEmpty()) {
+                for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
+                    localClaimUri = claimMapping.getClaim().getClaimUri();
+                    localClaimValue = localClaimValues.get(localClaimUri);
+                    remoteClaimUri = claimMapping.getMappedAttribute();
+
+                    // Avoid re-inserting a mapped claim
+                    if (localClaimValue != null && !mappedClaims.contains(localClaimUri)) {
+                        localClaimValues.remove(localClaimUri);
+                        localClaimValues.put(remoteClaimUri, localClaimValue);
+                    }
+
                 }
+            } else {
+                for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
+                    localClaimUri = claimMapping.getClaim().getClaimUri();
+                    localClaimValue = localClaimValues.get(localClaimUri);
+                    remoteClaimUri = claimMapping.getMappedAttribute();
+                    if (localClaimValue != null && mappedClaims.contains(localClaimUri)) {
+                        requestedClaim.put(remoteClaimUri, localClaimValue);
+                    }
+                }
+                return requestedClaim;
             }
 
             // Clean up old strings
