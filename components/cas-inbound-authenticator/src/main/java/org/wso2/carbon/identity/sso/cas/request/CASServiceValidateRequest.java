@@ -70,5 +70,3 @@ public class CASServiceValidateRequest extends CASIdentityRequest {
         }
     }
 }
-
-

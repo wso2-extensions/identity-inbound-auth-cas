@@ -27,6 +27,7 @@ import org.wso2.carbon.identity.application.authentication.framework.inbound.Ide
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.sso.cas.configuration.CASConfiguration;
+import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.request.CASSpInitRequest;
 import org.wso2.carbon.identity.sso.cas.response.CASLoginResponse;
@@ -45,7 +46,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
 
     @Override
     public String getName() {
-        return "SSOLoginProcessor";
+        return CASSSOConstants.CAS_SSO_LOGIN_PROCESSOR;
     }
 
     public int getPriority() {
@@ -54,7 +55,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
 
     @Override
     public String getCallbackPath(IdentityMessageContext context) {
-        return IdentityUtil.getServerURL("identity", false, false);
+        return IdentityUtil.getServerURL(CASSSOConstants.IDENTITY, false, false);
     }
 
     @Override
@@ -99,7 +100,11 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return null;
     }
 
-
+    /**
+     * Get the Ticket granting ticket Id.
+     * @param req the request
+     * @return the ticketGrantingTicketId
+     */
     public String getTicketGrantingTicketId(IdentityRequest req) {
         Cookie ticketGrantingCookie = getTicketGrantingCookie(req);
         if (ticketGrantingCookie != null) {
@@ -108,6 +113,11 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return ticketGrantingTicketId;
     }
 
+    /**
+     * Get the ticket granting cookie.
+     * @param req the request
+     * @return the cookie
+     */
     public Cookie getTicketGrantingCookie(IdentityRequest req) {
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
@@ -120,6 +130,12 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return null;
     }
 
+    /**
+     * Store the ticket granting cookie.
+     * @param sessionId the sessionId
+     * @param req the request
+     * @return the stored ticket granting cookie
+     */
     public Cookie storeTicketGrantingCookie(String sessionId, IdentityRequest req) {
         Cookie ticketGrantingCookie = getTicketGrantingCookie(req);
         if (ticketGrantingCookie == null) {

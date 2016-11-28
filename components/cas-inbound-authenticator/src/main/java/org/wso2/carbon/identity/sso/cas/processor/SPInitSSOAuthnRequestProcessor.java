@@ -50,7 +50,7 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
 
     @Override
     public String getCallbackPath(IdentityMessageContext context) {
-        return IdentityUtil.getServerURL("identity", false, false);
+        return IdentityUtil.getServerURL(CASSSOConstants.IDENTITY, false, false);
     }
 
     @Override

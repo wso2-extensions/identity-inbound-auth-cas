@@ -38,42 +38,58 @@ public class TicketGrantingTicket extends AbstractTicket {
     private Map<String, ServiceTicket> serviceTickets;
     private AuthenticationResult authenticationResult;
 
+    /**
+     * Constructor for creating ticket.
+     * @param authenticationResult the authenticationResult
+     * @param proxyRequest the proxyRequest
+     */
     public TicketGrantingTicket(AuthenticationResult authenticationResult, boolean proxyRequest) {
         super(proxyRequest ? TicketConstants.PROXY_GRANTING_TICKET_PREFIX : TicketConstants.TICKET_GRANTING_TICKET_PREFIX, proxyRequest);
         serviceTickets = new HashMap<String, ServiceTicket>();
         this.authenticationResult = authenticationResult;
     }
 
+    /**
+     * Grant the service ticket for the service provider url.
+     * @param service the service provider url
+     * @return the service ticket (ST)
+     */
     public synchronized ServiceTicket grantServiceTicket(final String service) {
         final ServiceTicket serviceTicket = new ServiceTicket(service, this, hasProxy());
-
         updateState();
-
         // Store a reference to the service ticket
         serviceTickets.put(serviceTicket.getId(), serviceTicket);
-
         // Persist the service ticket
         CASSSOUtil.storeServiceTicket(serviceTicket);
-
         return serviceTicket;
     }
 
-    public final boolean equals(final Object object) {
-        if (object == null
-                || !(object instanceof TicketGrantingTicket)) {
+    /**
+     * To make equal comparison between two objects.
+     * @param ticketObject the object
+     * @return true or false
+     */
+    public final boolean equals(final Object ticketObject) {
+        if (ticketObject == null || !(ticketObject instanceof TicketGrantingTicket)) {
             return false;
         }
-
-        final TicketGrantingTicket ticket = (TicketGrantingTicket) object;
-
+        final TicketGrantingTicket ticket = (TicketGrantingTicket) ticketObject;
         return ticket.getId().equals(this.getId());
     }
 
+    /**
+     * Check the expiration of tickets.
+     * @return true or flase
+     */
     @Override
     public boolean isExpired() {
         return expired;
     }
 
+    /**
+     * Get the authenticationResult.
+     * @return the authenticationResult
+     */
     public AuthenticationResult getAuthenticationResult(){
         return authenticationResult;
     }

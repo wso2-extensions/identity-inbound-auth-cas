@@ -17,13 +17,24 @@
  */
 package org.wso2.carbon.identity.sso.cas.ticket;
 
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.base.ServerConfiguration;
+import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 
+/**
+ * TicketIdGenerator for create the tickets (ST , TGT)
+ */
 public class TicketIdGenerator {
+
+    /**
+     * Generate the tickets with the prefix (ST or TGT)
+     * @param prefix the prefix of the ticket
+     * @return the ticket
+     */
     public static String generate(String prefix) {
-        String verifiedPrefix = (prefix != null) ? prefix : "UNKOWN";
+        String verifiedPrefix = (StringUtils.isNotEmpty(prefix)) ? prefix : "UNKOWN";
         return verifiedPrefix + "-" + UUIDGenerator.generateUUID().replaceAll("-", "") + "-" +
-                ServerConfiguration.getInstance().getFirstProperty("HostName");
+                ServerConfiguration.getInstance().getFirstProperty(CASSSOConstants.HOSTNAME);
     }
 }
