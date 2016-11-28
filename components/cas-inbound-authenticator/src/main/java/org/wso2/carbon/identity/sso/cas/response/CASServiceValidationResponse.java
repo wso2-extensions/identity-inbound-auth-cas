@@ -101,7 +101,8 @@ public class CASServiceValidationResponse extends CASResponse {
                                 String.valueOf(messageContext.getRequest().getTenantDomain()));
                         ClaimMapping[] claimMapping = serviceProvider.getClaimConfig().getClaimMappings();
                         String attributesXml = CASSSOUtil.buildAttributesXml(authenticationResult, claimMapping);
-                        responseXml = CASSSOUtil.buildSuccessResponse(String.valueOf(authenticationResult.getSubject()),
+                        responseXml = CASSSOUtil.buildSuccessResponse(String.valueOf(authenticationResult.getSubject()
+                                        .getAuthenticatedSubjectIdentifier()),
                                 attributesXml);
                     }
                 } else
