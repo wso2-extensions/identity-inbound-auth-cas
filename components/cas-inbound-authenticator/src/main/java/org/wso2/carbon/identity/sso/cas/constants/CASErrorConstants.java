@@ -17,13 +17,42 @@
  */
 package org.wso2.carbon.identity.sso.cas.constants;
 
+
+/**
+ * Class to represent constant values for CAS related errors
+ */
 public class CASErrorConstants {
+
+    /**
+     * Constant for CAS Invalid Request code
+     */
     public static final String INVALID_REQUEST_CODE = "INVALID_REQUEST";
+    /**
+     * Constant for CAS Invalid request message
+     */
     public static final String INVALID_REQUEST_MESSAGE = "cas.invalid.request.message";
+    /**
+     * Constant for CAS Invalid Ticket code
+     */
     public static final String INVALID_TICKET_CODE = "INVALID_TICKET";
+    /**
+     * Constant for CAS Invalid Ticket message
+     */
     public static final String INVALID_TICKET_MESSAGE = "cas.invalid.ticket.message";
+    /**
+     * Constant for CAS Invalid service url code
+     */
     public static final String INVALID_SERVICE_CODE = "INVALID_SERVICE";
+    /**
+     * Constant for CAS Invalid service url message
+     */
     public static final String INVALID_SERVICE_MESSAGE = "cas.invalid.service.message";
+    /**
+     * Constant for CAS Internal error code
+     */
     public static final String INTERNAL_ERROR_CODE = "INTERNAL_ERROR";
+    /**
+     * Constant for CAS Internal error message
+     */
     public static final String INTERNAL_ERROR_MESSAGE = "cas.internal.error.message";
 }

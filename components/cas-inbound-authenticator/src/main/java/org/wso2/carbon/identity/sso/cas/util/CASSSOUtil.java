@@ -330,7 +330,7 @@ public class CASSSOUtil {
             }
             catch (UserStoreException e) {
                 // User came from federated authentciation
-                log.warn ("Error while retrieving the user from federated authentication, e");
+                log.error ("Error while retrieving the user from federated authentication, e");
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
             log.debug("getUserClaimValues: username=" + username);
