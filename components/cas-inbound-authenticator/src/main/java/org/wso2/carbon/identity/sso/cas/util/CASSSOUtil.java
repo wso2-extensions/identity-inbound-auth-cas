@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.identity.sso.cas.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
@@ -30,13 +31,8 @@ import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRe
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCache;
-import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCacheEntry;
-import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCacheKey;
-import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCache;
-import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCacheEntry;
-import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCacheKey;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.cache.*;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
 import org.wso2.carbon.identity.sso.cas.exception.CASIdentityException;
 import org.wso2.carbon.identity.sso.cas.exception.TicketNotFoundException;
@@ -123,8 +119,8 @@ public class CASSSOUtil {
             if (tenantDomain == null) {
                 tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
             }
-            serviceProvider = appInfo.getServiceProviderByClientId(serviceProviderUrl,
-                    CASSSOConstants.CAS_SSO, tenantDomain);
+            serviceProvider = appInfo
+                    .getServiceProviderByClientId(serviceProviderUrl, CASConstants.CAS_CONFIG_NAME, tenantDomain);
         } catch (IdentityApplicationManagementException e) {
             throw new CASIdentityException("Error occurred while getting service provider in the tenant domain" +
                     tenantDomain + "'", e);
@@ -132,14 +128,18 @@ public class CASSSOUtil {
         return serviceProvider;
     }
 
-    public static String getAcsUrl(String servicProviderUrl, String tenantDomain) throws CAS2ClientException {
+    public static String getAcsUrl(String serviceProviderUrl, String tenantDomain) throws CAS2ClientException {
         ServiceProvider serviceProvider;
         String acsUrl = null;
         try {
-            serviceProvider = getServiceProviderByUrl(servicProviderUrl, tenantDomain);
-            for (InboundAuthenticationRequestConfig config : serviceProvider.getInboundAuthenticationConfig().
-                    getInboundAuthenticationRequestConfigs()) {
-                acsUrl = config.getInboundAuthKey();
+            serviceProvider = getServiceProviderByUrl(serviceProviderUrl, tenantDomain);
+            for (InboundAuthenticationRequestConfig authenticationRequestConfig : serviceProvider
+                    .getInboundAuthenticationConfig().getInboundAuthenticationRequestConfigs()) {
+                if (StringUtils.equals(authenticationRequestConfig.getInboundAuthType(), CASConstants.CAS_CONFIG_NAME)
+                        && StringUtils.equals(authenticationRequestConfig.getInboundAuthKey(), serviceProviderUrl)) {
+                    acsUrl = authenticationRequestConfig.getInboundAuthKey();
+                    break;
+                }
             }
         } catch (CASIdentityException e) {
             throw CAS2ClientException.error("Error while getting acsUrl from Inbound configuration", e);
@@ -221,7 +221,8 @@ public class CASSSOUtil {
         cache.addToCache(key, entry);
     }
 
-    public static TicketGrantingTicket getTicketGrantingTicket(String ticketGrantingTicketId) throws TicketNotFoundException {
+    public static TicketGrantingTicket getTicketGrantingTicket(String ticketGrantingTicketId)
+            throws TicketNotFoundException {
         TicketGrantingTicketCache cache = TicketGrantingTicketCache.getInstance();
 
         TicketGrantingTicketCacheKey key = new TicketGrantingTicketCacheKey(ticketGrantingTicketId);
@@ -352,7 +353,8 @@ public class CASSSOUtil {
         }
     }
 
-    public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping) throws IdentityException {
+    public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping)
+            throws IdentityException {
         StringBuilder attributesXml = new StringBuilder();
         Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping, null);
         for (Map.Entry<String, String> entry : claims.entrySet()) {

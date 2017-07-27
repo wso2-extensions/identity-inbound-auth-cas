@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,7 @@ import org.wso2.carbon.identity.application.authentication.framework.model.Authe
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.sso.cas.configuration.CASConfiguration;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
-import org.wso2.carbon.identity.sso.cas.request.CASSpInitRequest;
+import org.wso2.carbon.identity.sso.cas.request.CASSInitRequest;
 import org.wso2.carbon.identity.sso.cas.response.CASLoginResponse;
 import org.wso2.carbon.identity.sso.cas.response.CASResponse;
 import org.wso2.carbon.identity.sso.cas.ticket.ServiceTicket;
@@ -36,6 +36,8 @@ import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
 import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 public class SSOLoginProcessor extends IdentityProcessor {
     private static final String CAS_COOKIE_NAME = "CASTGC";
@@ -61,7 +63,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
     public boolean canHandle(IdentityRequest identityRequest) {
         IdentityMessageContext context = getContextIfAvailable(identityRequest);
         if (context != null) {
-            if (context.getRequest() instanceof CASSpInitRequest) {
+            if (context.getRequest() instanceof CASSInitRequest) {
                 return true;
             }
         }
@@ -72,11 +74,18 @@ public class SSOLoginProcessor extends IdentityProcessor {
     public CASResponse.CASResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
         Cookie casCookie = null;
         String serviceTicketId = null;
+        String serviceUrl = null;
+        URLDecoder decoder = new URLDecoder();
         CASMessageContext casMessageContext = (CASMessageContext) getContextIfAvailable(identityRequest);
         CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
-        String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
-        String acsURL = CASSSOUtil.getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
+        try {
+            serviceUrl = decoder
+                    .decode(casMessageContext.getRequest().getQueryString().replace("service=", ""), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new FrameworkException("Unable to decode the service URL", e);
+        }
+        String acsURL = CASSSOUtil.getAcsUrl(serviceUrl, casMessageContext.getRequest().getTenantDomain());
         if (authnResult.isAuthenticated()) {
             String ticketGrantingTicketId = getTicketGrantingTicketId(identityRequest);
             if (ticketGrantingTicketId == null) {
@@ -99,6 +108,10 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return null;
     }
 
+    @Override
+    public String getRelyingPartyId(IdentityMessageContext identityMessageContext) {
+        return identityMessageContext.getRelyingPartyId();
+    }
 
     public String getTicketGrantingTicketId(IdentityRequest req) {
         Cookie ticketGrantingCookie = getTicketGrantingCookie(req);

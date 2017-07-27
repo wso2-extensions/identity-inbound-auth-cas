@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -71,18 +71,19 @@ public class CASAuthenticatorServiceComponent {
 
     protected void activate(ComponentContext ctxt) {
 
+        CASConfigs casConfigs = new CASConfigs();
         CASSSOUtil.setBundleContext(ctxt.getBundleContext());
         ctxt.getBundleContext().registerService(HttpIdentityRequestFactory.class.getName(), new
                 CASIdentityRequestFactory(), null);
         ctxt.getBundleContext().registerService(HttpIdentityResponseFactory.class.getName(), new
                 HttpCASResponseFactory(), null);
-        ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SPInitSSOAuthnRequestProcessor
-                (), null);
+        ctxt.getBundleContext()
+                .registerService(IdentityProcessor.class.getName(), new SPInitSSOAuthnRequestProcessor(), null);
         ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SSOLoginProcessor(), null);
-        ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new CASServiceValidationProcessor(), null);
-        CASConfigs cas = new CASConfigs();
+        ctxt.getBundleContext()
+                .registerService(IdentityProcessor.class.getName(), new CASServiceValidationProcessor(), null);
         Hashtable<String, String> casProps = new Hashtable<String, String>();
-        ctxt.getBundleContext().registerService(AbstractInboundAuthenticatorConfig.class, cas, casProps);
+        ctxt.getBundleContext().registerService(AbstractInboundAuthenticatorConfig.class, casConfigs, casProps);
         log.info("Identity CAS SSO bundle is activated");
     }
 

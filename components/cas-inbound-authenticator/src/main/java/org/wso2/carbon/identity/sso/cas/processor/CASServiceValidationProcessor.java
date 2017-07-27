@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -55,8 +55,14 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
     }
 
     @Override
+    public String getRelyingPartyId(IdentityMessageContext identityMessageContext) {
+        return null;
+    }
+
+    @Override
     public boolean canHandle(IdentityRequest identityRequest) {
-        if (identityRequest instanceof CASServiceValidateRequest  && ((CASServiceValidateRequest) identityRequest).getServiceRequest
+        if (identityRequest instanceof CASServiceValidateRequest
+                && ((CASServiceValidateRequest) identityRequest).getServiceRequest
                 () != null && ((CASServiceValidateRequest) identityRequest).getServiceTicket() != null) {
             return true;
         }
@@ -69,7 +75,8 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
         CASMessageContext messageContext = new CASMessageContext((CASServiceValidateRequest) identityRequest, new
                 HashMap<String, String>());
         String redirectURL = messageContext.getServiceURL();
-        CASResponse.CASResponseBuilder builder = new CASServiceValidationResponse.CASServiceValidationResponseBuilder(messageContext);
+        CASResponse.CASResponseBuilder builder = new CASServiceValidationResponse.CASServiceValidationResponseBuilder(
+                messageContext);
         ((CASServiceValidationResponse.CASServiceValidationResponseBuilder) builder).buildResponse();
         ((CASServiceValidationResponse.CASServiceValidationResponseBuilder) builder).setRedirectUrl(redirectURL);
         return builder;

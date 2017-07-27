@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -20,8 +20,9 @@ package org.wso2.carbon.identity.sso.cas.request;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.application.authentication.framework.inbound.FrameworkClientException;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityRequest;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,17 +32,17 @@ public class CASServiceValidateRequest extends CASIdentityRequest {
     private static Log log = LogFactory.getLog(CASServiceValidateRequest.class);
     Locale locale;
 
-    public CASServiceValidateRequest(IdentityRequest.IdentityRequestBuilder builder) {
+    public CASServiceValidateRequest(IdentityRequest.IdentityRequestBuilder builder) throws FrameworkClientException {
         super((CASIdentityRequestBuilder) builder);
         this.locale = ((CASServiceValidateRequest.CASServiceValidateRequestBuilder) builder).locale;
     }
 
     public String getServiceRequest() {
-        return CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
+        return CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
     }
 
     public String getServiceTicket() {
-        return CASSSOConstants.SERVICE_TICKET_ARGUMENT;
+        return CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT;
     }
 
     public Locale getLocale() {
@@ -60,7 +61,7 @@ public class CASServiceValidateRequest extends CASIdentityRequest {
         }
 
         @Override
-        public CASServiceValidateRequest build() {
+        public CASServiceValidateRequest build() throws FrameworkClientException {
             return new CASServiceValidateRequest(this);
         }
 

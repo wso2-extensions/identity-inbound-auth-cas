@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -25,8 +25,7 @@ import org.wso2.carbon.identity.application.authentication.framework.model.Authe
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.base.IdentityException;
-import org.wso2.carbon.identity.sso.cas.constants.CASErrorConstants;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
 import org.wso2.carbon.identity.sso.cas.request.CASServiceValidateRequest;
@@ -80,23 +79,26 @@ public class CASServiceValidationResponse extends CASResponse {
             CASServiceValidateRequest req = messageContext.getValidateRequest();
             try {
                 log.debug("CAS " + req.getRequestURI() + " query string: " + req.getQueryString());
-                String serviceProviderUrl = req.getParameter(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
-                String serviceTicketId = req.getParameter(CASSSOConstants.SERVICE_TICKET_ARGUMENT);
+                String serviceProviderUrl = req.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
+                String serviceTicketId = req.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
                 if (serviceProviderUrl == null || serviceProviderUrl.trim().length() == 0 || serviceTicketId == null
                         || serviceTicketId.trim().length() == 0) {
                     throw CAS2ClientException.error("Required request parameters were missing",
-                            CASErrorConstants.INVALID_REQUEST_CODE, (CASResourceReader.getInstance().getLocalizedString(
-                                    CASErrorConstants.INVALID_REQUEST_MESSAGE, req.getLocale())), null, null);
+                            CASConstants.CASErrorConstants.INVALID_REQUEST_CODE, (CASResourceReader.getInstance()
+                                    .getLocalizedString(CASConstants.CASErrorConstants.INVALID_REQUEST_MESSAGE,
+                                            req.getLocale())), null, null);
                 }
                 if (CASSSOUtil.isValidServiceTicket(serviceTicketId)) {
                     // "service" URL argument must match a valid service provider URL
                     if (!CASSSOUtil.isValidAcsUrlForServiceTicket(serviceProviderUrl, serviceTicketId)) {
                         throw CAS2ClientException.error("ServiceProviderUrl is not valid",
-                                CASErrorConstants.INVALID_SERVICE_CODE, CASResourceReader.getInstance().getLocalizedString(
-                                        CASErrorConstants.INVALID_SERVICE_MESSAGE, req.getLocale()), serviceProviderUrl, null);
+                                CASConstants.CASErrorConstants.INVALID_SERVICE_CODE, CASResourceReader.getInstance()
+                                        .getLocalizedString(CASConstants.CASErrorConstants.INVALID_SERVICE_MESSAGE,
+                                                req.getLocale()), serviceProviderUrl, null);
                     } else {
                         ServiceTicket serviceTicket = CASSSOUtil.consumeServiceTicket(serviceTicketId);
-                        AuthenticationResult authenticationResult = serviceTicket.getParentTicket().getAuthenticationResult();
+                        AuthenticationResult authenticationResult = serviceTicket.getParentTicket()
+                                .getAuthenticationResult();
                         ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(serviceProviderUrl,
                                 String.valueOf(messageContext.getRequest().getTenantDomain()));
                         ClaimMapping[] claimMapping = serviceProvider.getClaimConfig().getClaimMappings();
@@ -106,14 +108,16 @@ public class CASServiceValidationResponse extends CASResponse {
                                 attributesXml);
                     }
                 } else
-                    throw CAS2ClientException.error("ServiceTicket is not valid", CASErrorConstants.INVALID_TICKET_CODE,
-                            (CASResourceReader.getInstance().getLocalizedString(
-                                    CASErrorConstants.INVALID_TICKET_MESSAGE, req.getLocale())), null, serviceTicketId);
+                    throw CAS2ClientException
+                            .error("ServiceTicket is not valid", CASConstants.CASErrorConstants.INVALID_TICKET_CODE,
+                                    (CASResourceReader.getInstance()
+                                            .getLocalizedString(CASConstants.CASErrorConstants.INVALID_TICKET_MESSAGE,
+                                                    req.getLocale())), null, serviceTicketId);
             } catch (IdentityException ex) {
                 log.error("CAS serviceValidate internal error", ex);
-                responseXml = CASSSOUtil.buildFailureResponse(CASErrorConstants.INTERNAL_ERROR_CODE,
+                responseXml = CASSSOUtil.buildFailureResponse(CASConstants.CASErrorConstants.INTERNAL_ERROR_CODE,
                         CASResourceReader.getInstance().getLocalizedString(
-                                CASErrorConstants.INTERNAL_ERROR_MESSAGE, req.getLocale()));
+                                CASConstants.CASErrorConstants.INTERNAL_ERROR_MESSAGE, req.getLocale()));
             }
             log.debug("CAS " + req.getRequestURI() + " response XML: " + responseXml);
             return responseXml;

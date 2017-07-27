@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -20,7 +20,7 @@ package org.wso2.carbon.identity.sso.cas.context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityMessageContext;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.request.CASIdentityRequest;
 import org.wso2.carbon.identity.sso.cas.request.CASServiceValidateRequest;
 
@@ -44,6 +44,6 @@ public class CASMessageContext<T1 extends Serializable, T2 extends Serializable>
     }
 
     public String getServiceURL() {
-        return request.getParameter(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
+        return request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
     }
 }
