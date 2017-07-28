@@ -28,7 +28,7 @@ import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.request.CASSInitRequest;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 
-import java.io.*;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
