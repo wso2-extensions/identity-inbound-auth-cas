@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -26,8 +26,7 @@ import org.wso2.carbon.identity.application.authentication.framework.inbound.Htt
 import org.wso2.carbon.identity.application.authentication.framework.inbound.HttpIdentityResponse;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityRequest;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
-import org.wso2.carbon.identity.sso.cas.constants.CASErrorConstants;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
 import org.wso2.carbon.identity.sso.cas.util.CASResourceReader;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
@@ -51,8 +50,8 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
 
     @Override
     public boolean canHandle(HttpServletRequest request, HttpServletResponse response) {
-        String serviceProviderUrl = request.getParameter(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
-        String ticket = request.getParameter(CASSSOConstants.SERVICE_TICKET_ARGUMENT);
+        String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
+        String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
         return StringUtils.isNotBlank(serviceProviderUrl) || StringUtils.isNotBlank(ticket);
     }
 
@@ -64,12 +63,12 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
     @Override
     public IdentityRequest.IdentityRequestBuilder create(HttpServletRequest request,
                                                          HttpServletResponse response) throws FrameworkClientException {
-        String serviceProviderUrl = request.getParameter(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
-        String ticket = request.getParameter(CASSSOConstants.SERVICE_TICKET_ARGUMENT);
+        String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
+        String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
         CASIdentityRequest.CASIdentityRequestBuilder builder;
         if (!StringUtils.isEmpty(serviceProviderUrl)) {
             if (StringUtils.isEmpty(ticket)) {
-                builder = new CASSpInitRequest.CASSpInitRequestBuilder(request, response);
+                builder = new CASSInitRequest.CASSpInitRequestBuilder(request, response);
             } else {
                 builder = new CASServiceValidateRequest.CASServiceValidateRequestBuilder(request, response);
                 ((CASServiceValidateRequest.CASServiceValidateRequestBuilder) builder).setLocale(request);
@@ -77,6 +76,7 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
         } else {
             throw CAS2ClientException.error("Invalid request message or invalid service url");
         }
+
         super.create(builder, request, response);
         return builder;
     }
@@ -91,10 +91,13 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
         if (((CAS2ClientException) exception).getAcsUrl() != null) {
             try {
                 Map<String, String[]> queryParams = new HashMap();
-                String genericErrorPage = IdentityUtil.getServerURL(CASSSOConstants.NOTIFICATION_ENDPOINT, false, false);
-                queryParams.put(CASSSOConstants.STATUS, new String[]{URLEncoder.encode(((CAS2ClientException)
+                String genericErrorPage = IdentityUtil
+                        .getServerURL(CASConstants.CASSSOConstants.NOTIFICATION_ENDPOINT, false, false);
+                queryParams.put(CASConstants.CASSSOConstants.STATUS,
+                        new String[] { URLEncoder.encode(((CAS2ClientException)
                         exception).getExceptionStatus(), StandardCharsets.UTF_8.name())});
-                queryParams.put(CASSSOConstants.STATUS_MSG, new String[]{URLEncoder.encode(((CAS2ClientException)
+                queryParams.put(CASConstants.CASSSOConstants.STATUS_MSG,
+                        new String[] { URLEncoder.encode(((CAS2ClientException)
                         exception).getExceptionMessage(), StandardCharsets.UTF_8.name())});
                 builder.setParameters(queryParams);
                 builder.setRedirectURL(genericErrorPage);
@@ -105,16 +108,16 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
                 }
             }
         } else {
-            String redirectURL = request.getParameter(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
+            String redirectURL = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
             if (((CAS2ClientException) exception).getServiceTicketId() != null) {
-                errorResponse = CASSSOUtil.buildFailureResponse(CASErrorConstants.INVALID_TICKET_CODE,
+                errorResponse = CASSSOUtil.buildFailureResponse(CASConstants.CASErrorConstants.INVALID_TICKET_CODE,
                         String.format(CASResourceReader.getInstance().getLocalizedString(
-                                        CASErrorConstants.INVALID_TICKET_MESSAGE, request.getLocale()),
+                                        CASConstants.CASErrorConstants.INVALID_TICKET_MESSAGE, request.getLocale()),
                                 ((CAS2ClientException) exception).getServiceTicketId()));
             } else {
-                errorResponse = CASSSOUtil.buildFailureResponse(CASErrorConstants.INVALID_REQUEST_CODE,
+                errorResponse = CASSSOUtil.buildFailureResponse(CASConstants.CASErrorConstants.INVALID_REQUEST_CODE,
                         CASResourceReader.getInstance().getLocalizedString(
-                                CASErrorConstants.INVALID_REQUEST_MESSAGE, request.getLocale()));
+                                CASConstants.CASErrorConstants.INVALID_REQUEST_MESSAGE, request.getLocale()));
             }
             builder.setBody(errorResponse);
             builder.setRedirectURL(redirectURL);

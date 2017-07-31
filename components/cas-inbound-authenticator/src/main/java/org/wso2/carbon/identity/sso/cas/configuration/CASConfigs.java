@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -21,52 +21,39 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.common.model.Property;
 import org.wso2.carbon.identity.application.mgt.AbstractInboundAuthenticatorConfig;
-import org.wso2.carbon.identity.base.IdentityConstants;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 public class CASConfigs extends AbstractInboundAuthenticatorConfig {
 
     private static Log log = LogFactory.getLog(CASConfigs.class);
 
     @Override
-    public String getAuthKey() {
-        return null;
-    }
-
-    @Override
     public String getConfigName() {
-        return "cas";
+        return CASConstants.CAS_CONFIG_NAME;
     }
 
     //this is the authType
     @Override
     public String getName() {
-        return CASSSOConstants.CAS_SSO;
+        return CASConstants.CAS_CONFIG_NAME;
     }
 
     @Override
     public String getFriendlyName() {
-        return "CAS Configuration";
+        return CASConstants.CAS_FRIENDLY_NAME;
     }
 
     @Override
     public Property[] getConfigurationProperties() {
-
-        Property appType = new Property();
-        appType.setName(IdentityConstants.ServerConfig.WELLKNOWN_APPLICATION_TYPE);
-        appType.setType("hidden");
-        appType.setValue(getConfigName());
-        appType.setDisplayName(IdentityConstants.ServerConfig.WELLKNOWN_APPLICATION_TYPE);
-
         Property service = new Property();
-        service.setName(CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
-        service.setDisplayName(CASSSOConstants.CAS_SERVICE_URL);
+        service.setName(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
+        service.setDisplayName(CASConstants.CASSSOConstants.CAS_SERVICE_URL);
 
-        return new Property[]{appType, service};
+        return new Property[]{service};
     }
 
     @Override
     public String getRelyingPartyKey() {
-        return CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
+        return CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
     }
 }

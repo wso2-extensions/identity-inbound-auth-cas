@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.sso.cas.ticket;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.sso.cas.constants.TicketConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 /**
  * CAS service tickets are associated to a service provider by a ticket-granting ticket and
@@ -34,7 +34,9 @@ public class ServiceTicket extends AbstractTicket {
     private boolean used = false;
 
     public ServiceTicket(String acsUrl, TicketGrantingTicket parentTicket, boolean proxyRequest) {
-        super(proxyRequest ? TicketConstants.PROXY_TICKET_PREFIX : TicketConstants.SERVICE_TICKET_PREFIX, proxyRequest);
+        super(proxyRequest ?
+                CASConstants.TicketConstants.PROXY_TICKET_PREFIX :
+                CASConstants.TicketConstants.SERVICE_TICKET_PREFIX, proxyRequest);
         ticketGrantingTicket = parentTicket;
         service = acsUrl;
     }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,7 @@ import org.wso2.carbon.identity.application.authentication.framework.model.Authe
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.sso.cas.configuration.CASConfiguration;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
-import org.wso2.carbon.identity.sso.cas.request.CASSpInitRequest;
+import org.wso2.carbon.identity.sso.cas.request.CASSInitRequest;
 import org.wso2.carbon.identity.sso.cas.response.CASLoginResponse;
 import org.wso2.carbon.identity.sso.cas.response.CASResponse;
 import org.wso2.carbon.identity.sso.cas.ticket.ServiceTicket;
@@ -61,7 +61,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
     public boolean canHandle(IdentityRequest identityRequest) {
         IdentityMessageContext context = getContextIfAvailable(identityRequest);
         if (context != null) {
-            if (context.getRequest() instanceof CASSpInitRequest) {
+            if (context.getRequest() instanceof CASSInitRequest) {
                 return true;
             }
         }
@@ -99,6 +99,10 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return null;
     }
 
+    @Override
+    public String getRelyingPartyId(IdentityMessageContext identityMessageContext) {
+        return identityMessageContext.getRelyingPartyId();
+    }
 
     public String getTicketGrantingTicketId(IdentityRequest req) {
         Cookie ticketGrantingCookie = getTicketGrantingCookie(req);

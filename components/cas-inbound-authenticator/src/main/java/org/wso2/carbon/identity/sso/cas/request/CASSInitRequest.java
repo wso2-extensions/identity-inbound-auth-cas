@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -20,21 +20,22 @@ package org.wso2.carbon.identity.sso.cas.request;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.application.authentication.framework.inbound.FrameworkClientException;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CASSpInitRequest extends CASIdentityRequest {
+public class CASSInitRequest extends CASIdentityRequest {
 
-    private static Log log = LogFactory.getLog(CASSpInitRequest.class);
+    private static Log log = LogFactory.getLog(CASSInitRequest.class);
 
-    public CASSpInitRequest(CASSpInitRequestBuilder builder) {
+    public CASSInitRequest(CASSpInitRequestBuilder builder) throws FrameworkClientException {
         super(builder);
     }
 
     public String getServiceRequest() {
-        return CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
+        return CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT;
     }
 
     public static class CASSpInitRequestBuilder extends CASIdentityRequestBuilder {
@@ -44,8 +45,8 @@ public class CASSpInitRequest extends CASIdentityRequest {
         }
 
         @Override
-        public CASSpInitRequest build() {
-            return new CASSpInitRequest(this);
+        public CASSInitRequest build() throws FrameworkClientException {
+            return new CASSInitRequest(this);
         }
     }
 }

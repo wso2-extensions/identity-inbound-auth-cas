@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -19,7 +19,7 @@ package org.wso2.carbon.identity.sso.cas.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -41,7 +41,7 @@ public class CASResourceReader {
     }
 
     public String getLocalizedString(String key, Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle(CASSSOConstants.RESOURCE_BUNDLE, locale);
+        ResourceBundle bundle = ResourceBundle.getBundle(CASConstants.CASSSOConstants.RESOURCE_BUNDLE, locale);
         if (bundle != null) {
             return bundle.getString(key);
         } else {

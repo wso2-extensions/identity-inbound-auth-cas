@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -23,9 +23,9 @@ import org.wso2.carbon.identity.application.authentication.framework.inbound.*;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationRequest;
 import org.wso2.carbon.identity.application.authentication.framework.util.FrameworkUtils;
 import org.wso2.carbon.identity.core.util.IdentityUtil;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
-import org.wso2.carbon.identity.sso.cas.request.CASSpInitRequest;
+import org.wso2.carbon.identity.sso.cas.request.CASSInitRequest;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 
 import java.io.UnsupportedEncodingException;
@@ -40,7 +40,7 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
     private String relyingParty;
     @Override
     public String getName() {
-        return CASSSOConstants.CAS_SSO;
+        return CASConstants.CAS_CONFIG_NAME;
     }
 
     @Override
@@ -59,8 +59,13 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
     }
 
     @Override
+    public String getRelyingPartyId(IdentityMessageContext identityMessageContext) {
+        return this.relyingParty;
+    }
+
+    @Override
     public boolean canHandle(IdentityRequest identityRequest) {
-        if (identityRequest instanceof CASSpInitRequest && ((CASSpInitRequest) identityRequest).getServiceRequest
+        if (identityRequest instanceof CASSInitRequest && ((CASSInitRequest) identityRequest).getServiceRequest
                 () != null) {
             return true;
         }
@@ -68,7 +73,8 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
     }
 
     @Override
-    protected FrameworkLoginResponse.FrameworkLoginResponseBuilder buildResponseForFrameworkLogin(IdentityMessageContext context) {
+    protected FrameworkLoginResponse.FrameworkLoginResponseBuilder buildResponseForFrameworkLogin(
+            IdentityMessageContext context) {
         IdentityRequest identityRequest = context.getRequest();
         Map parameterMap = identityRequest.getParameterMap();
         AuthenticationRequest authenticationRequest = new AuthenticationRequest();
@@ -77,10 +83,11 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
 
         while (authRequest.hasNext()) {
             Object sessionDataKey = authRequest.next();
-            authenticationRequest.addHeader((String) sessionDataKey, (String) identityRequest.getHeaderMap().get(sessionDataKey));
+            authenticationRequest
+                    .addHeader((String) sessionDataKey, (String) identityRequest.getHeaderMap().get(sessionDataKey));
             authenticationRequest.getType();
         }
-        authenticationRequest.setRelyingParty(getRelyingPartyId());
+        authenticationRequest.setRelyingParty(getRelyingPartyId(context));
         authenticationRequest.setType(this.getName());
         authenticationRequest.setPassiveAuth(Boolean.parseBoolean(String.valueOf(context.getParameter("passiveAuth"))));
         authenticationRequest.setForceAuth(Boolean.parseBoolean(String.valueOf(context.getParameter("forceAuth"))));
@@ -93,16 +100,16 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
                     this.getCallbackPath(context), var9);
         }
 
-        AuthenticationRequestCacheEntry authRequest1 = new AuthenticationRequestCacheEntry(authenticationRequest);
-        String sessionDataKey1 = UUIDGenerator.generateUUID();
-        FrameworkUtils.addAuthenticationRequestToCache(sessionDataKey1, authRequest1);
-        InboundUtil.addContextToCache(sessionDataKey1, context);
+        AuthenticationRequestCacheEntry newAuthRequest = new AuthenticationRequestCacheEntry(authenticationRequest);
+        String newSessionDataKey = UUIDGenerator.generateUUID();
+        FrameworkUtils.addAuthenticationRequestToCache(newSessionDataKey, newAuthRequest);
+        InboundUtil.addContextToCache(newSessionDataKey, context);
         FrameworkLoginResponse.FrameworkLoginResponseBuilder responseBuilder = new FrameworkLoginResponse.
                 FrameworkLoginResponseBuilder(context);
         responseBuilder.setAuthName(this.getName());
-        responseBuilder.setContextKey(sessionDataKey1);
+        responseBuilder.setContextKey(newSessionDataKey);
         responseBuilder.setCallbackPath(this.getCallbackPath(context));
-        responseBuilder.setRelyingParty(getRelyingPartyId());
+        responseBuilder.setRelyingParty(getRelyingPartyId(context));
         responseBuilder.setAuthType(this.getName());
         String commonAuthURL = IdentityUtil.getServerURL("commonauth", true, true);
         responseBuilder.setRedirectURL(commonAuthURL);
@@ -112,7 +119,7 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
     @Override
     public FrameworkLoginResponse.FrameworkLoginResponseBuilder process(IdentityRequest identityRequest) throws
             FrameworkException {
-        CASMessageContext messageContext = new CASMessageContext((CASSpInitRequest) identityRequest, new
+        CASMessageContext messageContext = new CASMessageContext((CASSInitRequest) identityRequest, new
                 HashMap<String, String>());
         this.relyingParty = messageContext.getServiceURL();
         return buildResponseForFrameworkLogin(messageContext);

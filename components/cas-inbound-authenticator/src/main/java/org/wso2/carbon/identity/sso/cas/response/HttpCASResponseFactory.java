@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.HttpIdentityResponse;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.HttpIdentityResponseFactory;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityResponse;
-import org.wso2.carbon.identity.sso.cas.constants.CASSSOConstants;
+import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -58,10 +58,9 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
     }
 
     @Override
-    public HttpIdentityResponse.HttpIdentityResponseBuilder create(HttpIdentityResponse.HttpIdentityResponseBuilder
-                                                                           httpIdentityResponseBuilder, IdentityResponse
-                                                                           identityResponse) {
-        return create(identityResponse);
+    public void create(HttpIdentityResponse.HttpIdentityResponseBuilder httpIdentityResponseBuilder,
+            IdentityResponse identityResponse) {
+        create(identityResponse);
     }
 
     private HttpIdentityResponse.HttpIdentityResponseBuilder sendResponse(IdentityResponse identityResponse) {
@@ -72,7 +71,7 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
         String serviceTicketId = loginResponse.getServiceTicketId();
         String redirectUrl = loginResponse.getRedirectUrl();
         Map<String, String[]> queryParams = new HashMap();
-        queryParams.put(CASSSOConstants.SERVICE_TICKET_ARGUMENT, new String[]{serviceTicketId});
+        queryParams.put(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT, new String[]{serviceTicketId});
         builder.addCookie(cookie);
         builder.setParameters(queryParams);
         builder.setRedirectURL(redirectUrl);
@@ -80,7 +79,8 @@ public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
         return builder;
     }
 
-    private HttpIdentityResponse.HttpIdentityResponseBuilder sendServiceValidationResponse(IdentityResponse identityResponse) {
+    private HttpIdentityResponse.HttpIdentityResponseBuilder sendServiceValidationResponse(
+            IdentityResponse identityResponse) {
         CASServiceValidationResponse casServiceValidationResponse = ((CASServiceValidationResponse) identityResponse);
         HttpIdentityResponse.HttpIdentityResponseBuilder builder = new HttpIdentityResponse
                 .HttpIdentityResponseBuilder();

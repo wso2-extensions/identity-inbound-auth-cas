@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -20,6 +20,7 @@ package org.wso2.carbon.identity.sso.cas.request;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.identity.application.authentication.framework.inbound.FrameworkClientException;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public class CASIdentityRequest extends IdentityRequest {
     String serviceUrlFromRequest;
     String subject;
 
-    public CASIdentityRequest(CASIdentityRequestBuilder builder) {
+    public CASIdentityRequest(CASIdentityRequestBuilder builder) throws FrameworkClientException {
         super(builder);
         this.serviceUrlFromRequest = builder.serviceUrlFromRequest;
         this.subject = builder.subject;
