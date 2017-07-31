@@ -36,8 +36,6 @@ import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
 import javax.servlet.http.Cookie;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 public class SSOLoginProcessor extends IdentityProcessor {
     private static final String CAS_COOKIE_NAME = "CASTGC";
@@ -74,18 +72,11 @@ public class SSOLoginProcessor extends IdentityProcessor {
     public CASResponse.CASResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
         Cookie casCookie = null;
         String serviceTicketId = null;
-        String serviceUrl = null;
-        URLDecoder decoder = new URLDecoder();
         CASMessageContext casMessageContext = (CASMessageContext) getContextIfAvailable(identityRequest);
         CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
+        String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
-        try {
-            serviceUrl = decoder
-                    .decode(casMessageContext.getRequest().getQueryString().replace("service=", ""), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new FrameworkException("Unable to decode the service URL", e);
-        }
-        String acsURL = CASSSOUtil.getAcsUrl(serviceUrl, casMessageContext.getRequest().getTenantDomain());
+        String acsURL = CASSSOUtil.getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
         if (authnResult.isAuthenticated()) {
             String ticketGrantingTicketId = getTicketGrantingTicketId(identityRequest);
             if (ticketGrantingTicketId == null) {

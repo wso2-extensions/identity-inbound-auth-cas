@@ -33,11 +33,9 @@ import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,15 +75,6 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
             }
         } else {
             throw CAS2ClientException.error("Invalid request message or invalid service url");
-        }
-
-        Enumeration attributeNames = request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            String attributeName = (String) attributeNames.nextElement();
-            Object attributeValue = request.getAttribute(attributeName);
-            if (!(attributeValue instanceof Serializable)) {
-                request.removeAttribute(attributeName);
-            }
         }
 
         super.create(builder, request, response);
