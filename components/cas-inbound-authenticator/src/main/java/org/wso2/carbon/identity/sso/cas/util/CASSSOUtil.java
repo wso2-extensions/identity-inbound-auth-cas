@@ -261,10 +261,6 @@ public class CASSSOUtil {
                 log.debug("adding requested claim: " + claimMapping.getClaim().getClaimUri());
             }
 
-            for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                requestedClaims.add(claimMapping.getClaim().getClaimUri());
-            }
-
             // Get claim values for the user
             UserStoreManager userStoreManager = null;
             boolean localAuthentication = false;
@@ -324,7 +320,6 @@ public class CASSSOUtil {
                         localClaimValues.remove(localClaimUri);
                         localClaimValues.put(remoteClaimUri, localClaimValue);
                     }
-
                 }
             } else {
                 for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
@@ -335,7 +330,12 @@ public class CASSSOUtil {
                         requestedClaim.put(remoteClaimUri, localClaimValue);
                     }
                 }
-                return requestedClaim;
+                if(requestedClaim.isEmpty()){
+                    localClaimValues.remove(CASConstants.MULTI_ATTRIBUTE_SEPARATOR);
+                    return localClaimValues;
+                } else {
+                    return requestedClaim;
+                }
             }
 
             // Clean up old strings
