@@ -78,8 +78,9 @@ public class CASServiceValidationResponse extends CASResponse {
             CASMessageContext messageContext = (CASMessageContext) this.context;
             CASServiceValidateRequest req = messageContext.getValidateRequest();
             try {
-                //TODO log.isDebugEnabled
-                log.debug("CAS " + req.getRequestURI() + " query string: " + req.getQueryString());
+                if (log.isDebugEnabled()) {
+                    log.debug("CAS " + req.getRequestURI() + " query string: " + req.getQueryString());
+                }
                 String serviceProviderUrl = req.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
                 String serviceTicketId = req.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
                 if (serviceProviderUrl == null || serviceProviderUrl.trim().length() == 0 || serviceTicketId == null
