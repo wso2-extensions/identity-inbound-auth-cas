@@ -242,7 +242,8 @@ public class CASSSOUtil {
             throws IdentityException {
         try {
             String username = String.valueOf(result.getSubject());
-            List<String> requestedClaims = new ArrayList<String>();
+            List<String> allClaims = new ArrayList<String>();
+            Map<String, String> claimsMap = new HashMap<String, String>();
             List<String> mappedClaims = new ArrayList<String>();
 
             UserRealm userRealm = AnonymousSessionUtil.getRealmByUserName(CASSSOUtil.getRegistryService(),
@@ -257,8 +258,10 @@ public class CASSSOUtil {
             ClaimManager claimManager = userRealm.getClaimManager();
             org.wso2.carbon.user.api.ClaimMapping[] mappings = claimManager.getAllClaimMappings();
             for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                requestedClaims.add(claimMapping.getClaim().getClaimUri());
-                log.debug("adding requested claim: " + claimMapping.getClaim().getClaimUri());
+                allClaims.add(claimMapping.getClaim().getClaimUri());
+                if (log.isDebugEnabled()) {
+                    log.debug("adding requested claim: " + claimMapping.getClaim().getClaimUri());
+                }
             }
 
             // Get claim values for the user
@@ -272,20 +275,24 @@ public class CASSSOUtil {
                 log.warn("Error while retrieving the user from federated authentication, e");
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
-            log.debug("getUserClaimValues: username=" + username);
+            if (log.isDebugEnabled()) {
+                log.debug("getUserClaimValues: username=" + username);
+            }
             Map<String, String> localClaimValues = new HashMap<String, String>();
 
             if (userStoreManager == null || !localAuthentication) {
                 Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
                 if (userAttributes != null) {
                     for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
-                        log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
-                        localClaimValues.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+                        if (log.isDebugEnabled()) {
+                            log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
+                        }
+                        claimsMap.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
                     }
                 }
             } else {
-                localClaimValues = userStoreManager.getUserClaimValues(username,
-                        requestedClaims.toArray(new String[requestedClaims.size()]), profile);
+                claimsMap = userStoreManager.getUserClaimValues(username,
+                        allClaims.toArray(new String[allClaims.size()]), profile);
             }
 
             Map<String, String> requestedClaim = new HashMap<String, String>();
@@ -296,14 +303,13 @@ public class CASSSOUtil {
             // Remove the original claim URI and add the new mapped claim URI
             for (ClaimMapping claimMapping : claimMappings) {
                 localClaimUri = claimMapping.getLocalClaim().getClaimUri();
-                localClaimValue = localClaimValues.get(localClaimUri);
+                localClaimValue = claimsMap.get(localClaimUri);
                 remoteClaimUri = claimMapping.getRemoteClaim().getClaimUri();
-
-                log.debug("getUserClaimValues: localClaimUri=" + localClaimUri + " ==> localClaimValue="
-                        + localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri);
-
+                if (log.isDebugEnabled()) {
+                    log.debug("getUserClaimValues: localClaimUri=" + localClaimUri + " ==> localClaimValue="
+                            + localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri);
+                }
                 if (localClaimValue != null) {
-                    localClaimValues.remove(localClaimUri);
                     localClaimValues.put(remoteClaimUri, localClaimValue);
                 }
             }
@@ -312,38 +318,31 @@ public class CASSSOUtil {
             if (mappedClaims.isEmpty()) {
                 for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
                     localClaimUri = claimMapping.getClaim().getClaimUri();
-                    localClaimValue = localClaimValues.get(localClaimUri);
+                    localClaimValue = claimsMap.get(localClaimUri);
                     remoteClaimUri = claimMapping.getMappedAttribute();
 
                     // Avoid re-inserting a mapped claim
-                    if (localClaimValue != null && !mappedClaims.contains(localClaimUri)) {
-                        localClaimValues.remove(localClaimUri);
+                    if (localClaimValue != null) {
                         localClaimValues.put(remoteClaimUri, localClaimValue);
                     }
                 }
+                return localClaimValues;
             } else {
                 for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
                     localClaimUri = claimMapping.getClaim().getClaimUri();
-                    localClaimValue = localClaimValues.get(localClaimUri);
+                    localClaimValue = claimsMap.get(localClaimUri);
                     remoteClaimUri = claimMapping.getMappedAttribute();
                     if (localClaimValue != null && mappedClaims.contains(localClaimUri)) {
                         requestedClaim.put(remoteClaimUri, localClaimValue);
                     }
                 }
-                if(requestedClaim.isEmpty()){
-                    localClaimValues.remove(CASConstants.MULTI_ATTRIBUTE_SEPARATOR);
-                    return localClaimValues;
+                if (requestedClaim.isEmpty()) {
+                    claimsMap.remove(CASConstants.MULTI_ATTRIBUTE_SEPARATOR);
+                    return claimsMap;
                 } else {
                     return requestedClaim;
                 }
             }
-
-            // Clean up old strings
-            localClaimUri = null;
-            localClaimValue = null;
-            remoteClaimUri = null;
-
-            return localClaimValues;
         } catch (UserStoreException e) {
             log.info("Error while retrieving claims values", e);
             throw new CASIdentityException("Error while retrieving claims values", e);
@@ -353,6 +352,7 @@ public class CASSSOUtil {
         }
     }
 
+
     public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping)
             throws IdentityException {
         StringBuilder attributesXml = new StringBuilder();
@@ -361,7 +361,9 @@ public class CASSSOUtil {
             String entryKey = entry.getKey().replaceAll(" ", "_");
             attributesXml.append(String.format(attributeTemplate, entryKey, entry.getValue(), entryKey));
         }
-        log.debug("attributesXml:\n" + attributesXml);
+        if (log.isDebugEnabled()) {
+            log.debug("attributesXml:\n" + attributesXml);
+        }
         return attributesXml.toString();
     }
 
