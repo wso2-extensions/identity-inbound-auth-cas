@@ -260,7 +260,7 @@ public class CASSSOUtil {
             }
         } else {
             if(log.isDebugEnabled()){
-                log.debug(" May be the " + "AuthenticationResult  ==> " +  result);
+                log.debug(" May be the authentication result or user attributes can be null ");
             }
         }
         return requestedClaims;
