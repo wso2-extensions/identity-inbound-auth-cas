@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-
 public class CASSSOUtil {
     protected static final String validationResponse = "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">%s</cas:serviceResponse>";
     private static final String success = "<cas:authenticationSuccess>%s</cas:authenticationSuccess>";
@@ -237,34 +236,56 @@ public class CASSSOUtil {
         }
     }
 
-    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings, String profile)
-            throws IdentityException {
+    /**
+     * @param result        the authentication result.
+     * @param claimMappings the claim mappings.
+     * @param profile       the profile.
+     * @return requestedClaims map.
+     * @throws IdentityException
+     */
+
+    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings,
+                                                         String profile) throws IdentityException {
         Map<String, String> requestedClaims = new HashMap<String, String>();
         if (result != null && result.getSubject() != null) {
-            if(log.isDebugEnabled()){
-                log.debug("Trying to get userAttributes with Authentication Result " + result + " and " + result.getSubject() + " since they are not empty.");
+            if (log.isDebugEnabled()) {
+                log.debug("Trying to get userAttributes with Authentication Result " + result + " for user " + result
+                        .getSubject());
             }
             Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
             if (userAttributes != null) {
-                if(log.isDebugEnabled()){
-                    log.debug(" Getting the userAttributes from authentication result ");
+                if (log.isDebugEnabled()) {
+                    log.debug("Getting the userAttributes from authentication results user attributes");
                 }
                 for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
                     if (log.isDebugEnabled()) {
                         log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
                     }
-                    if (!entry.getKey().getLocalClaim().getClaimUri().equals(IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR)) {
+                    if (!entry.getKey().getLocalClaim().getClaimUri().equals(IdentityCoreConstants
+                            .MULTI_ATTRIBUTE_SEPARATOR)) {
                         requestedClaims.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
                     }
                 }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("User attributes not found in AuthenticatedUser. Hence returning empty map.");
+                }
             }
         } else {
-            if(log.isDebugEnabled()){
-                log.debug(" May be the authentication result or user attributes can be null ");
+            if (log.isDebugEnabled()) {
+                log.debug("Either authentication result null or authenticated user is not present. Hence user " +
+                        "returning empty map for user attributes ");
             }
         }
         return requestedClaims;
     }
+
+    /**
+     * @param result       the authentication result.
+     * @param claimMapping the claim mappings.
+     * @return attributesXml.
+     * @throws IdentityException
+     */
 
     public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping)
             throws IdentityException {
