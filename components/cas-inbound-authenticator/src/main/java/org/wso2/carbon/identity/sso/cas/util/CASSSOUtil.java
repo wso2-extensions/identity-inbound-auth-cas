@@ -47,11 +47,9 @@ import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 
 
@@ -242,15 +240,16 @@ public class CASSSOUtil {
     public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings)
             throws IdentityException {
         Map<String, String> requestedClaims = new HashMap<String, String>();
-
-        Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
-        if (userAttributes != null) {
-            for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
-                if (log.isDebugEnabled()) {
-                    log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
-                }
-                if(!entry.getKey().getLocalClaim().getClaimUri().equals(IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR)) {
-                    requestedClaims.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+        if (result != null && result.getSubject() != null) {
+            Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
+            if (userAttributes != null) {
+                for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
+                    }
+                    if (!entry.getKey().getLocalClaim().getClaimUri().equals(IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR)) {
+                        requestedClaims.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+                    }
                 }
             }
         }
