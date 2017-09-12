@@ -237,7 +237,7 @@ public class CASSSOUtil {
         }
     }
 
-    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings)
+    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings, String profile)
             throws IdentityException {
         Map<String, String> requestedClaims = new HashMap<String, String>();
         if (result != null && result.getSubject() != null) {
@@ -259,7 +259,7 @@ public class CASSSOUtil {
     public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping)
             throws IdentityException {
         StringBuilder attributesXml = new StringBuilder();
-        Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping);
+        Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping, null);
         for (Map.Entry<String, String> entry : claims.entrySet()) {
             String entryKey = entry.getKey().replaceAll(" ", "_");
             attributesXml.append(String.format(attributeTemplate, entryKey, entry.getValue(), entryKey));
