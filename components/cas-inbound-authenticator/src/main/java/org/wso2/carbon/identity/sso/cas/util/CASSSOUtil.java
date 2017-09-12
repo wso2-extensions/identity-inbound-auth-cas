@@ -22,8 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
-import org.wso2.carbon.CarbonException;
-import org.wso2.carbon.core.util.AnonymousSessionUtil;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
@@ -32,7 +30,12 @@ import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
 import org.wso2.carbon.identity.core.util.IdentityCoreConstants;
-import org.wso2.carbon.identity.sso.cas.cache.*;
+import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCache;
+import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCacheEntry;
+import org.wso2.carbon.identity.sso.cas.cache.ServiceTicketCacheKey;
+import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCache;
+import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCacheEntry;
+import org.wso2.carbon.identity.sso.cas.cache.TicketGrantingTicketCacheKey;
 import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
 import org.wso2.carbon.identity.sso.cas.exception.CASIdentityException;
@@ -40,16 +43,17 @@ import org.wso2.carbon.identity.sso.cas.exception.TicketNotFoundException;
 import org.wso2.carbon.identity.sso.cas.ticket.ServiceTicket;
 import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.user.core.UserRealm;
-import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.user.core.claim.ClaimManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
-import java.util.*;
+
 
 public class CASSSOUtil {
     protected static final String validationResponse = "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">%s</cas:serviceResponse>";
@@ -237,56 +241,20 @@ public class CASSSOUtil {
 
     public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings)
             throws IdentityException {
-        try {
-            String username = String.valueOf(result.getSubject());
-            Map<String, String> localClaimValues = new HashMap<String, String>();
-            List<String> mappedClaims = new ArrayList<String>();
-            Map<String, String> requestedClaim = new HashMap<String, String>();
-            UserRealm userRealm = AnonymousSessionUtil.getRealmByUserName(CASSSOUtil.getRegistryService(),
-                    CASSSOUtil.getRealmService(),
-                    username);
+        Map<String, String> requestedClaims = new HashMap<String, String>();
 
-            for (ClaimMapping claimMapping : claimMappings) {
-                mappedClaims.add(claimMapping.getLocalClaim().getClaimUri());
-            }
-
-            Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
-            if (userAttributes != null) {
-                for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
-                    }
-                    localClaimValues.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+        Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
+        if (userAttributes != null) {
+            for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
+                if (log.isDebugEnabled()) {
+                    log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
+                }
+                if(!entry.getKey().getLocalClaim().getClaimUri().equals(IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR)) {
+                    requestedClaims.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
                 }
             }
-
-            if (!mappedClaims.isEmpty()) {
-                ClaimManager claimManager = userRealm.getClaimManager();
-                org.wso2.carbon.user.api.ClaimMapping[] mappings = claimManager.getAllClaimMappings();
-                for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                    String localClaimUri = claimMapping.getClaim().getClaimUri();
-                    String localClaimValue = localClaimValues.get(localClaimUri);
-                    String remoteClaimUri = claimMapping.getMappedAttribute();
-
-                    if (localClaimValue != null && mappedClaims.contains(localClaimUri)) {
-                        requestedClaim.put(remoteClaimUri, localClaimValue);
-                    }
-                }
-                if (requestedClaim.isEmpty()) {
-                    localClaimValues.remove(IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR);
-                    return localClaimValues;
-                } else {
-                    return requestedClaim;
-                }
-            }
-            return Collections.emptyMap();
-        } catch (UserStoreException e) {
-            log.info("Error while retrieving claims values", e);
-            throw new CASIdentityException("Error while retrieving claims values", e);
-        } catch (CarbonException | org.wso2.carbon.user.api.UserStoreException e) {
-            log.info("Error while retrieving claims values", e);
-            throw new CASIdentityException("Error while retrieving claim values", e);
         }
+        return requestedClaims;
     }
 
     public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping)
