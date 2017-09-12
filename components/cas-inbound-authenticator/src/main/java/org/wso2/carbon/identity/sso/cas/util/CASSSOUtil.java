@@ -31,6 +31,7 @@ import org.wso2.carbon.identity.application.common.model.InboundAuthenticationRe
 import org.wso2.carbon.identity.application.common.model.ServiceProvider;
 import org.wso2.carbon.identity.application.mgt.ApplicationManagementService;
 import org.wso2.carbon.identity.base.IdentityException;
+import org.wso2.carbon.identity.core.util.IdentityCoreConstants;
 import org.wso2.carbon.identity.sso.cas.cache.*;
 import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.exception.CAS2ClientException;
@@ -41,7 +42,6 @@ import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.UserStoreException;
-import org.wso2.carbon.user.core.UserStoreManager;
 import org.wso2.carbon.user.core.claim.ClaimManager;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
@@ -49,10 +49,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CASSSOUtil {
     protected static final String validationResponse = "<cas:serviceResponse xmlns:cas=\"http://www.yale.edu/tp/cas\">%s</cas:serviceResponse>";
@@ -131,6 +128,7 @@ public class CASSSOUtil {
     public static String getAcsUrl(String serviceProviderUrl, String tenantDomain) throws CAS2ClientException {
         ServiceProvider serviceProvider;
         String acsUrl = null;
+
         try {
             serviceProvider = getServiceProviderByUrl(serviceProviderUrl, tenantDomain);
             for (InboundAuthenticationRequestConfig authenticationRequestConfig : serviceProvider
@@ -237,16 +235,13 @@ public class CASSSOUtil {
         }
     }
 
-    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings,
-                                                         String profile)
+    public static Map<String, String> getUserClaimValues(AuthenticationResult result, ClaimMapping[] claimMappings)
             throws IdentityException {
         try {
             String username = String.valueOf(result.getSubject());
-            String tenantAwareUsername = null;
-            List<String> allClaims = new ArrayList<String>();
-            Map<String, String> claimsMap = new HashMap<String, String>();
+            Map<String, String> localClaimValues = new HashMap<String, String>();
             List<String> mappedClaims = new ArrayList<String>();
-
+            Map<String, String> requestedClaim = new HashMap<String, String>();
             UserRealm userRealm = AnonymousSessionUtil.getRealmByUserName(CASSSOUtil.getRegistryService(),
                     CASSSOUtil.getRealmService(),
                     username);
@@ -255,96 +250,36 @@ public class CASSSOUtil {
                 mappedClaims.add(claimMapping.getLocalClaim().getClaimUri());
             }
 
-            // Get all supported claims
-            ClaimManager claimManager = userRealm.getClaimManager();
-            org.wso2.carbon.user.api.ClaimMapping[] mappings = claimManager.getAllClaimMappings();
-            for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                allClaims.add(claimMapping.getClaim().getClaimUri());
-                if (log.isDebugEnabled()) {
-                    log.debug("adding requested claim: " + claimMapping.getClaim().getClaimUri());
-                }
-            }
-
-            // Get claim values for the user
-            UserStoreManager userStoreManager = null;
-            boolean localAuthentication = false;
-            try {
-                userStoreManager = userRealm.getUserStoreManager();
-                tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(username);
-                if (log.isDebugEnabled()) {
-                    log.debug("getUserClaimValues: username=" + tenantAwareUsername);
-                }
-                localAuthentication = userStoreManager.isExistingUser(tenantAwareUsername);
-            } catch (UserStoreException e) {
-                // User came from federated authentication
-                log.warn("Error while retrieving the user from federated authentication, e");
-            }
-
-            Map<String, String> localClaimValues = new HashMap<String, String>();
-
-            if (userStoreManager == null || !localAuthentication) {
-                Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
-                if (userAttributes != null) {
-                    for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
-                        }
-                        claimsMap.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
+            Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
+            if (userAttributes != null) {
+                for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
                     }
-                }
-            } else {
-                claimsMap = userStoreManager.getUserClaimValues(tenantAwareUsername,
-                        allClaims.toArray(new String[allClaims.size()]), profile);
-            }
-
-            Map<String, String> requestedClaim = new HashMap<String, String>();
-            String localClaimValue = null;
-            String localClaimUri = null;
-            String remoteClaimUri = null;
-
-            // Remove the original claim URI and add the new mapped claim URI
-            for (ClaimMapping claimMapping : claimMappings) {
-                localClaimUri = claimMapping.getLocalClaim().getClaimUri();
-                localClaimValue = claimsMap.get(localClaimUri);
-                remoteClaimUri = claimMapping.getRemoteClaim().getClaimUri();
-                if (log.isDebugEnabled()) {
-                    log.debug("getUserClaimValues: localClaimUri=" + localClaimUri + " ==> localClaimValue="
-                            + localClaimValue + " ==> remoteClaimUri=" + remoteClaimUri);
-                }
-                if (localClaimValue != null) {
-                    localClaimValues.put(remoteClaimUri, localClaimValue);
+                    localClaimValues.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
                 }
             }
 
-            // Remove the original claim URI and add the mapped attribute
-            if (mappedClaims.isEmpty()) {
+            if (!mappedClaims.isEmpty()) {
+                ClaimManager claimManager = userRealm.getClaimManager();
+                org.wso2.carbon.user.api.ClaimMapping[] mappings = claimManager.getAllClaimMappings();
                 for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                    localClaimUri = claimMapping.getClaim().getClaimUri();
-                    localClaimValue = claimsMap.get(localClaimUri);
-                    remoteClaimUri = claimMapping.getMappedAttribute();
+                    String localClaimUri = claimMapping.getClaim().getClaimUri();
+                    String localClaimValue = localClaimValues.get(localClaimUri);
+                    String remoteClaimUri = claimMapping.getMappedAttribute();
 
-                    // Avoid re-inserting a mapped claim
-                    if (localClaimValue != null) {
-                        localClaimValues.put(remoteClaimUri, localClaimValue);
-                    }
-                }
-                return localClaimValues;
-            } else {
-                for (org.wso2.carbon.user.api.ClaimMapping claimMapping : mappings) {
-                    localClaimUri = claimMapping.getClaim().getClaimUri();
-                    localClaimValue = claimsMap.get(localClaimUri);
-                    remoteClaimUri = claimMapping.getMappedAttribute();
                     if (localClaimValue != null && mappedClaims.contains(localClaimUri)) {
                         requestedClaim.put(remoteClaimUri, localClaimValue);
                     }
                 }
                 if (requestedClaim.isEmpty()) {
-                    claimsMap.remove(CASConstants.MULTI_ATTRIBUTE_SEPARATOR);
-                    return claimsMap;
+                    localClaimValues.remove(IdentityCoreConstants.MULTI_ATTRIBUTE_SEPARATOR);
+                    return localClaimValues;
                 } else {
                     return requestedClaim;
                 }
             }
+            return Collections.emptyMap();
         } catch (UserStoreException e) {
             log.info("Error while retrieving claims values", e);
             throw new CASIdentityException("Error while retrieving claims values", e);
@@ -354,11 +289,10 @@ public class CASSSOUtil {
         }
     }
 
-
     public static String buildAttributesXml(AuthenticationResult result, ClaimMapping[] claimMapping)
             throws IdentityException {
         StringBuilder attributesXml = new StringBuilder();
-        Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping, null);
+        Map<String, String> claims = CASSSOUtil.getUserClaimValues(result, claimMapping);
         for (Map.Entry<String, String> entry : claims.entrySet()) {
             String entryKey = entry.getKey().replaceAll(" ", "_");
             attributesXml.append(String.format(attributeTemplate, entryKey, entry.getValue(), entryKey));

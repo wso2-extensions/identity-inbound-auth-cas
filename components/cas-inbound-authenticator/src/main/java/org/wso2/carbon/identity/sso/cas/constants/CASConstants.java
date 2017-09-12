@@ -21,7 +21,6 @@ public class CASConstants {
     public static final String CAS_CONFIG_NAME = "cas";
     public static final String CAS_FRIENDLY_NAME = "CAS Configuration";
     public static final String CAS_APP_TYPE = "hidden";
-    public static final String MULTI_ATTRIBUTE_SEPARATOR = "MultiAttributeSeparator";
 
     /**
      * CAS specific SSO constants.
