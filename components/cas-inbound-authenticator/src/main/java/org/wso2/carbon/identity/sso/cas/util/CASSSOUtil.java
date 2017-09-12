@@ -241,8 +241,14 @@ public class CASSSOUtil {
             throws IdentityException {
         Map<String, String> requestedClaims = new HashMap<String, String>();
         if (result != null && result.getSubject() != null) {
+            if(log.isDebugEnabled()){
+                log.debug("Trying to get userAttributes with Authentication Result " + result + " and " + result.getSubject() + " since they are not empty.");
+            }
             Map<ClaimMapping, String> userAttributes = result.getSubject().getUserAttributes();
             if (userAttributes != null) {
+                if(log.isDebugEnabled()){
+                    log.debug(" Getting the userAttributes from authentication result ");
+                }
                 for (Map.Entry<ClaimMapping, String> entry : userAttributes.entrySet()) {
                     if (log.isDebugEnabled()) {
                         log.debug(entry.getKey().getLocalClaim().getClaimUri() + " ==> " + entry.getValue());
@@ -251,6 +257,10 @@ public class CASSSOUtil {
                         requestedClaims.put(entry.getKey().getLocalClaim().getClaimUri(), entry.getValue());
                     }
                 }
+            }
+        } else {
+            if(log.isDebugEnabled()){
+                log.debug(" May be the " + "AuthenticationResult  ==> " +  result);
             }
         }
         return requestedClaims;
