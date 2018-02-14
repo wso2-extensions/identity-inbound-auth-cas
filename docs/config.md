@@ -3,7 +3,7 @@
 This topic provides instructions on how to configure the CAS inbound authenticator and the WSO2 Identity Server and demonstrates this integration using a sample app (cas-client-webapp). 
  
  ````
- CAS Version 2.0.1 Inbound Authenticator is supported by WSO2 Identity Server versions 5.3.0. 
+ CAS Version 2.0.2 Inbound Authenticator is supported by WSO2 Identity Server versions 5.3.0. 
  ````
  
 * [Download and set up CAS](#download-and-set-up-CAS)
@@ -17,7 +17,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  * Download WSO2 Identity Server from the [WSO2 Identity Server](https://wso2.com/identity-and-access-management) and install it by following the 
    instructions in the [Installing the Product](https://docs.wso2.com/display/IS520/Installing+the+Product) topic.
  * Download the sample CAS client webapp (cas-client-webapp.war) from [https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS]
- * Download the CAS Version 2.0.1 Inbound Authenticator JAR from the store for this authenticator.
+ * Download the CAS Version 2.0.2 Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
  * The CAS login URL is required if you want to use it in your own app. It must be: https://<IS_IP>:9443/identity/cas/login
 
  ### Configuring cas-client-webapp
@@ -56,7 +56,8 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  ### Deploying CAS artifacts
     
    1. Place the cas-client-webapp.war file into the webapps directory of the web-container (e.g., <TOMCAT_HOME>/webapps). 
-   2. Place the org.wso2.carbon.identity.sso.cas-2.0.1.jar file into the <IS_HOME>/repository/components/dropins directory and restart the Identity Server.
+   2. Place the org.wso2.carbon.identity.sso.cas-2.0.2.jar file into the <IS_HOME>/repository/components/dropins 
+   directory and restart the Identity Server.
  
  
  ### Configuring the service provider
