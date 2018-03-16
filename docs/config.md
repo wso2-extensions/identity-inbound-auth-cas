@@ -6,7 +6,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  CAS Version 2.0.2 Inbound Authenticator is supported by WSO2 Identity Server versions 5.3.0. 
  ````
  
-* [Download and set up CAS](#download-and-set-up-CAS)
+* [Download and set up CAS](#download-and-set-up-cas)
 * [Configuring cas-client-webapp](#configuring-cas-client-webapp)
 * [Deploying CAS artifacts](#deploying-cas-artifacts)
 * [Configuring the service provider](#configuring-the-service-provider)
@@ -16,7 +16,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
 
  * Download WSO2 Identity Server from the [WSO2 Identity Server](https://wso2.com/identity-and-access-management) and install it by following the 
    instructions in the [Installing the Product](https://docs.wso2.com/display/IS520/Installing+the+Product) topic.
- * Download the sample CAS client webapp (cas-client-webapp.war) from [https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS]
+ * Download the sample CAS client webapp (cas-client-webapp.war) from [https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS](https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS)
  * Download the CAS Version 2.0.2 Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
  * The CAS login URL is required if you want to use it in your own app. It must be: https://<IS_IP>:9443/identity/cas/login
 
@@ -28,7 +28,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
         a password and fill in the certificate’s details.
  
         keytool -genkey -alias localhost -keyalg RSA -keystore "PATH_TO_CREATE_KEYSTORE/KEYSTORE_NAME".
-       Here localhost is the same name as the machine's hostname.
+       > Here localhost is the same name as the machine's hostname.
      
      b. Add the following connector in the server.xml file in your web-container (e.g., <TOMCAT_HOME>/conf/server.xml)
      
@@ -40,7 +40,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
              keystorePass="KEYSTORE_PASSWORD" />
      ```` 
      
-     KEYSTORE_PASSWORD is the password you assigned to your keystore via the "keytool" command.
+       > KEYSTORE_PASSWORD is the password you assigned to your keystore via the "keytool" command.
      
  2. To establish the trust between cas-client-webapp and CAS-Server (WSO2 IS), take the following steps:
  
@@ -48,7 +48,9 @@ This topic provides instructions on how to configure the CAS inbound authenticat
        
        keytool -export -alias wso2carbon -file wso2.crt -keystore wso2carbon.jks -storepass wso2carbon
        
-    b. Inside the above directory use the following command to import the CAS server certificate (wso2.crt) into the system truststore of the CAS client. You will be prompted for the keystore password, which is by default change it.
+    b. Inside the above directory use the following command to import the CAS server certificate (wso2.crt) into the 
+    system truststore of the CAS client. You will be prompted for the keystore password, which is by default 
+    **changeit**.
         
        keytool -import -alias wso2carbon -file wso2.crt -keystore PATH-TO-jre/lib/security/cacerts
  
@@ -58,6 +60,9 @@ This topic provides instructions on how to configure the CAS inbound authenticat
    1. Place the cas-client-webapp.war file into the webapps directory of the web-container (e.g., <TOMCAT_HOME>/webapps). 
    2. Place the org.wso2.carbon.identity.sso.cas-2.0.2.jar file into the <IS_HOME>/repository/components/dropins 
    directory and restart the Identity Server.
+   
+   >If you are using WSO2 Identity Server 5.3.0, make sure to take the **WUM** updated product since this 
+   feature needs some core fixes done to the product.
  
  
  ### Configuring the service provider
@@ -67,16 +72,23 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  2. Log in to the [management console](https://docs.wso2.com/display/IS530/Getting+Started+with+the+Management+Console) as an administrator.
  3. In the **Identity** section under the Main tab, click **Add** under **Service Providers**.
  4. Enter **cas-client-webapp** in the **Service Provider Name** text box and click **Register**.
+ 
+    ![alt text](images/image4.png)
+    
  5. In the **Inbound Authentication Configuration** section, click **CAS Configuration**.
- 6. Configure the **Service Url**: [https://localhost:8443/cas-client-webapp/]
- (https://localhost:8080/cas-sample-java-webapp/). Here service URL refers to the URL of the application that the 
- client 
- is trying to access.
+ 6. Configure the **Service Url**: [https://localhost:8443/cas-client-webapp/](https://localhost:8080/cas-sample-java-webapp/). 
+ 
+    ![alt text](images/image3.png)
+    
+    >Here service URL refers to the URL of the application that the client is trying to access.
     
  7. Go to **Claim Configuration** and click **Define Custom Claim Dialect** to add the requested claims. (This is 
  required to show requested claims as user attributes in the cas-client-webapp; otherwise, no attributes will be 
  shown.) Add the **Service Provider Claim** name that corresponds to the **Local Claim** URI and mark it as **Requested 
  Claim**.
+    
+    ![alt text](images/image2.png)
+    
  8. Click **Update** to save the changes. Now you have configured the service provider.
  
  ### Testing the sample
@@ -84,4 +96,9 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  1. To test the sample, navigate to https://[server-address]/cas-client-webapp/ in your browser (i.e., go to the 
  following URL: [https://localhost:8443/cas-client-webapp/](https://localhost:8443/cas-client-webapp/)).
  2. Use your IS username and password in the basic authentication.
+    
+    ![alt text](images/image1.png)
+    
  3. If you have successfully logged in, you will see the following CAS Home page of cas-client-webapp with the authenticated user and user attributes.
+    
+    ![alt text](images/image5.png)
