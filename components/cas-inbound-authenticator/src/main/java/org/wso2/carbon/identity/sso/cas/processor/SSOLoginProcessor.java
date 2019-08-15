@@ -39,7 +39,7 @@ import javax.servlet.http.Cookie;
 
 public class SSOLoginProcessor extends IdentityProcessor {
     private static final String CAS_COOKIE_NAME = "CASTGC";
-    private static Log log = LogFactory.getLog(SSOLoginProcessor.class);
+    private static final Log log = LogFactory.getLog(SSOLoginProcessor.class);
     private static String ticketGrantingTicketId;
     TicketGrantingTicket ticketGrantingTicket;
 

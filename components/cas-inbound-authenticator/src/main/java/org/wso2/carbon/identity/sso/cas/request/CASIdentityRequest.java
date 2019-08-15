@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class CASIdentityRequest extends IdentityRequest {
-    private static Log log = LogFactory.getLog(CASIdentityRequest.class);
+    private static final Log log = LogFactory.getLog(CASIdentityRequest.class);
     String serviceUrlFromRequest;
     String subject;
 

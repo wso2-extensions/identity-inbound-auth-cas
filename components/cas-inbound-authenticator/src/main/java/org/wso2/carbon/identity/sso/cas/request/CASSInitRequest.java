@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class CASSInitRequest extends CASIdentityRequest {
 
-    private static Log log = LogFactory.getLog(CASSInitRequest.class);
+    private static final Log log = LogFactory.getLog(CASSInitRequest.class);
 
     public CASSInitRequest(CASSpInitRequestBuilder builder) throws FrameworkClientException {
         super(builder);

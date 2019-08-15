@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class CASMessageContext<T1 extends Serializable, T2 extends Serializable> extends IdentityMessageContext {
-    private static Log log = LogFactory.getLog(CASMessageContext.class);
+    private static final Log log = LogFactory.getLog(CASMessageContext.class);
 
     public CASMessageContext(CASIdentityRequest request, Map<T1, T2> parameters) {
         super(request, parameters);

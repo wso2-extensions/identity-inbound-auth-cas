@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
 
 public class CASServiceValidateRequest extends CASIdentityRequest {
-    private static Log log = LogFactory.getLog(CASServiceValidateRequest.class);
+    private static final Log log = LogFactory.getLog(CASServiceValidateRequest.class);
     Locale locale;
 
     public CASServiceValidateRequest(IdentityRequest.IdentityRequestBuilder builder) throws FrameworkClientException {

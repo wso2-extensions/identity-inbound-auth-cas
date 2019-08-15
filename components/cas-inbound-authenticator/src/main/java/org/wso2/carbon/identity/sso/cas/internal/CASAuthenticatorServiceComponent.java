@@ -65,7 +65,7 @@ import java.util.Hashtable;
 
 public class CASAuthenticatorServiceComponent {
 
-    private static Log log = LogFactory.getLog(CASAuthenticatorServiceComponent.class);
+    private static final Log log = LogFactory.getLog(CASAuthenticatorServiceComponent.class);
     private SPInitSSOAuthnRequestProcessor authnRequestProcessor;
     private CASIdentityRequestFactory casRequestFactory;
 

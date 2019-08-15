@@ -25,7 +25,7 @@ import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 
 public class CASConfigs extends AbstractInboundAuthenticatorConfig {
 
-    private static Log log = LogFactory.getLog(CASConfigs.class);
+    private static final Log log = LogFactory.getLog(CASConfigs.class);
 
     @Override
     public String getConfigName() {

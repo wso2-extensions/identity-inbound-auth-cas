@@ -58,7 +58,7 @@ public class CASSSOUtil {
     private static final String userTemplate = "<cas:user>%s</cas:user>";
     private static final String attributesWrapper = "<cas:attributes>%s</cas:attributes>";
     private static final String attributeTemplate = "<cas:%s>%s</cas:%s>";
-    private static Log log = LogFactory.getLog(CASSSOUtil.class);
+    private static final Log log = LogFactory.getLog(CASSSOUtil.class);
     private static HttpService httpService;
     private static BundleContext bundleContext;
     private static ConfigurationContextService configCtxService;
