@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class HttpCASResponseFactory extends HttpIdentityResponseFactory {
 
-    private static Log log = LogFactory.getLog(HttpCASResponseFactory.class);
+    private static final Log log = LogFactory.getLog(HttpCASResponseFactory.class);
 
     @Override
     public String getName() {

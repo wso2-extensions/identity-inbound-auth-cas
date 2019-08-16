@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 public abstract class AbstractTicket implements Serializable {
     private static final long serialVersionUID = -2915000694712403246L;
-    private static Log log = LogFactory.getLog(AbstractTicket.class);
+    private static final Log log = LogFactory.getLog(AbstractTicket.class);
     // Possibly make this timeout threshold configurable
     private static int TIMEOUT_THRESHOLD = 1 * 60000; // 1 minute in milliseconds
     protected long lastTimeUsed;

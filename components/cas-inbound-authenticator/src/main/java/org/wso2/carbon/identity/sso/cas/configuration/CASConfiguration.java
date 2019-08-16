@@ -23,7 +23,7 @@ import org.wso2.carbon.identity.core.util.IdentityUtil;
 
 public class CASConfiguration {
     private static final String CAS_CONTEXT_PATH = "CAS.ContextPath";
-    private static Log log = LogFactory.getLog(CASConfiguration.class);
+    private static final Log log = LogFactory.getLog(CASConfiguration.class);
     private static String basePath = "/cas"; // Default context path
 
     static {

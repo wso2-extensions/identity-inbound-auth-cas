@@ -57,7 +57,7 @@ public class CASServiceValidationResponse extends CASResponse {
     }
 
     public static class CASServiceValidationResponseBuilder extends CASResponseBuilder {
-        private static Log log = LogFactory.getLog(CASServiceValidationResponseBuilder.class);
+        private static final Log log = LogFactory.getLog(CASServiceValidationResponseBuilder.class);
         private String responseXml;
         private String redirectUrl;
 

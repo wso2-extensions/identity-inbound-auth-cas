@@ -57,7 +57,7 @@ public class CASLoginResponse extends CASResponse {
 
     public static class CASLoginResponseBuilder extends CASResponseBuilder {
 
-        private static Log log = LogFactory.getLog(CASLoginResponseBuilder.class);
+        private static final Log log = LogFactory.getLog(CASLoginResponseBuilder.class);
 
         private String redirectUrl;
         private Cookie casCookie;

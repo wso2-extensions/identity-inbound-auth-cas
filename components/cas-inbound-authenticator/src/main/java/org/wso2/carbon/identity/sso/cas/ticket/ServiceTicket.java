@@ -28,7 +28,7 @@ import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
  */
 public class ServiceTicket extends AbstractTicket {
     private static final long serialVersionUID = 3163737436365602898L;
-    private static Log log = LogFactory.getLog(ServiceTicket.class);
+    private static final Log log = LogFactory.getLog(ServiceTicket.class);
     private TicketGrantingTicket ticketGrantingTicket;
     private String service;
     private boolean used = false;

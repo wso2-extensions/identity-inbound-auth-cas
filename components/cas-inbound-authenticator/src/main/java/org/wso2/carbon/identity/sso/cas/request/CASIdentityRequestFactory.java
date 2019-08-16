@@ -41,7 +41,7 @@ import java.util.Map;
 
 public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
 
-    private static Log log = LogFactory.getLog(CASIdentityRequestFactory.class);
+    private static final Log log = LogFactory.getLog(CASIdentityRequestFactory.class);
 
     @Override
     public String getName() {

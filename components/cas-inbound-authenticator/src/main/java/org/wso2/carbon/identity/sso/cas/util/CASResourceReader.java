@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
  */
 public class CASResourceReader {
     private static CASResourceReader instance = new CASResourceReader();
-    private static Log log = LogFactory.getLog(CASResourceReader.class);
+    private static final Log log = LogFactory.getLog(CASResourceReader.class);
 
     private CASResourceReader() {
 

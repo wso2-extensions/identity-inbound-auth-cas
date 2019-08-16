@@ -33,7 +33,7 @@ import org.wso2.carbon.identity.sso.cas.response.CASServiceValidationResponse;
 import java.util.HashMap;
 
 public class CASServiceValidationProcessor extends IdentityProcessor {
-    private static Log log = LogFactory.getLog(CASServiceValidationProcessor.class);
+    private static final Log log = LogFactory.getLog(CASServiceValidationProcessor.class);
 
     @Override
     public String getName() {
