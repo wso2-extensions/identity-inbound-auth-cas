@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.sso.cas.processor;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
@@ -36,6 +37,8 @@ import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
 import javax.servlet.http.Cookie;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class SSOLoginProcessor extends IdentityProcessor {
     private static final String CAS_COOKIE_NAME = "CASTGC";
@@ -76,7 +79,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
         String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
-        String acsURL = CASSSOUtil.getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
+        String acsURL = getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
         if (authnResult.isAuthenticated()) {
             String ticketGrantingTicketId = getTicketGrantingTicketId(identityRequest);
             if (ticketGrantingTicketId == null) {
@@ -132,5 +135,33 @@ public class SSOLoginProcessor extends IdentityProcessor {
         ticketGrantingCookie.setPath(CASConfiguration.getBasePath());
         ticketGrantingCookie.setSecure(true);
         return ticketGrantingCookie;
+    }
+
+    private String getAcsUrl(String serviceUrlFromRequest, String tenantDomain) throws FrameworkException {
+
+        URL url;
+        try {
+            url = new URL(serviceUrlFromRequest);
+        } catch (MalformedURLException e) {
+            throw new FrameworkException("Error occurred while retrieving cas service url from: " +
+                    serviceUrlFromRequest, e);
+        }
+
+        String baseUrl = url.getProtocol() + "://" + url.getHost();
+        if (url.getPort() != -1) {
+            baseUrl = baseUrl + ":" + url.getPort();
+        }
+        baseUrl += url.getPath();
+
+        String acsURL = CASSSOUtil.getAcsUrl(baseUrl, tenantDomain);
+
+        if (StringUtils.equals(baseUrl, acsURL)) {
+            acsURL = serviceUrlFromRequest;
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Resolved acsURL for cas: " + acsURL);
+        }
+        return acsURL;
     }
 }
