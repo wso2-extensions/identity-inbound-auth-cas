@@ -52,7 +52,8 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
     public boolean canHandle(HttpServletRequest request, HttpServletResponse response) {
         String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
         String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
-        return StringUtils.isNotBlank(serviceProviderUrl) || StringUtils.isNotBlank(ticket);
+        boolean logout = request.getRequestURI().contains("logout");
+        return StringUtils.isNotBlank(serviceProviderUrl) || StringUtils.isNotBlank(ticket) || logout;
     }
 
     @Override
@@ -63,6 +64,7 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
     @Override
     public IdentityRequest.IdentityRequestBuilder create(HttpServletRequest request,
                                                          HttpServletResponse response) throws FrameworkClientException {
+        boolean logout = request.getRequestURI().contains("logout");
         String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
         String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
         CASIdentityRequest.CASIdentityRequestBuilder builder;
@@ -73,6 +75,8 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
                 builder = new CASServiceValidateRequest.CASServiceValidateRequestBuilder(request, response);
                 ((CASServiceValidateRequest.CASServiceValidateRequestBuilder) builder).setLocale(request);
             }
+        } else if (logout) {
+                builder = new CASLogoutRequest.CASSpInitRequestBuilder(request, response);
         } else {
             throw CAS2ClientException.error("Invalid request message or invalid service url");
         }
