@@ -18,6 +18,10 @@
 
 package org.wso2.carbon.identity.sso.cas.processor;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.servlet.http.Cookie;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
@@ -35,11 +39,9 @@ import org.wso2.carbon.identity.sso.cas.ticket.ServiceTicket;
 import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
-import javax.servlet.http.Cookie;
-
 public class SSOLoginProcessor extends IdentityProcessor {
     private static final String CAS_COOKIE_NAME = "CASTGC";
-    private static final Log log = LogFactory.getLog(SSOLoginProcessor.class);
+    private static Log log = LogFactory.getLog(SSOLoginProcessor.class);
     private static String ticketGrantingTicketId;
     TicketGrantingTicket ticketGrantingTicket;
 
@@ -59,13 +61,8 @@ public class SSOLoginProcessor extends IdentityProcessor {
 
     @Override
     public boolean canHandle(IdentityRequest identityRequest) {
-        IdentityMessageContext context = getContextIfAvailable(identityRequest);
-        if (context != null) {
-            if (context.getRequest() instanceof CASSInitRequest) {
-                return true;
-            }
-        }
-        return false;
+        IdentityMessageContext context = this.getContextIfAvailable(identityRequest);
+        return context != null && context.getRequest() instanceof CASSInitRequest;
     }
 
     @Override
@@ -76,7 +73,31 @@ public class SSOLoginProcessor extends IdentityProcessor {
         CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
         String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
-        String acsURL = CASSSOUtil.getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
+        URL url = null;
+
+        try {
+            url = new URL(serviceUrlFromRequest);
+        } catch (MalformedURLException mfe) {
+            throw new FrameworkException("Error occurred while retrieving cas service url from: " + serviceUrlFromRequest, mfe);
+        }
+
+        String baseUrl = url.getProtocol() + "://" + url.getHost();
+        if (url.getPort() != -1) {
+            baseUrl = baseUrl + ":" + url.getPort();
+        }
+
+        if(log.isDebugEnabled()){
+            log.debug("Resolved base url for cas" + baseUrl);
+        }
+        String acsURL = CASSSOUtil.getAcsUrl(baseUrl, casMessageContext.getRequest().getTenantDomain());
+        if (StringUtils.equals(baseUrl, acsURL)) {
+            acsURL = serviceUrlFromRequest;
+        }
+
+        if(log.isDebugEnabled()){
+            log.info("Resolved acsURL for cas " + acsURL);
+        }
+
         if (authnResult.isAuthenticated()) {
             String ticketGrantingTicketId = getTicketGrantingTicketId(identityRequest);
             if (ticketGrantingTicketId == null) {
@@ -94,12 +115,10 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return builder;
     }
 
-    @Override
     public String getRelyingPartyId() {
         return null;
     }
 
-    @Override
     public String getRelyingPartyId(IdentityMessageContext identityMessageContext) {
         return identityMessageContext.getRelyingPartyId();
     }

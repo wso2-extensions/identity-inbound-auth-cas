@@ -29,6 +29,7 @@ import org.wso2.carbon.identity.sso.cas.configuration.CASConfigs;
 import org.wso2.carbon.identity.sso.cas.processor.CASServiceValidationProcessor;
 import org.wso2.carbon.identity.sso.cas.processor.SPInitSSOAuthnRequestProcessor;
 import org.wso2.carbon.identity.sso.cas.processor.SSOLoginProcessor;
+import org.wso2.carbon.identity.sso.cas.processor.SSOLogoutProcessor;
 import org.wso2.carbon.identity.sso.cas.request.CASIdentityRequestFactory;
 import org.wso2.carbon.identity.sso.cas.response.HttpCASResponseFactory;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
@@ -80,6 +81,7 @@ public class CASAuthenticatorServiceComponent {
         ctxt.getBundleContext()
                 .registerService(IdentityProcessor.class.getName(), new SPInitSSOAuthnRequestProcessor(), null);
         ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SSOLoginProcessor(), null);
+        ctxt.getBundleContext().registerService(IdentityProcessor.class.getName(), new SSOLogoutProcessor(), null);
         ctxt.getBundleContext()
                 .registerService(IdentityProcessor.class.getName(), new CASServiceValidationProcessor(), null);
         Hashtable<String, String> casProps = new Hashtable<String, String>();
