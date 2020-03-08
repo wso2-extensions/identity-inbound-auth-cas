@@ -52,7 +52,7 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
     public boolean canHandle(HttpServletRequest request, HttpServletResponse response) {
         String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
         String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
-        boolean logout = request.getRequestURI().contains("logout");
+        boolean logout = request.getRequestURI().contains(CASConstants.CAS_LOGOUT_URI);
         return StringUtils.isNotBlank(serviceProviderUrl) || StringUtils.isNotBlank(ticket) || logout;
     }
 
@@ -64,7 +64,7 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
     @Override
     public IdentityRequest.IdentityRequestBuilder create(HttpServletRequest request,
                                                          HttpServletResponse response) throws FrameworkClientException {
-        boolean logout = request.getRequestURI().contains("logout");
+        boolean logout = request.getRequestURI().contains(CASConstants.CAS_LOGOUT_URI);
         String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
         String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
         CASIdentityRequest.CASIdentityRequestBuilder builder;

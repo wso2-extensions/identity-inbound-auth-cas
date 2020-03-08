@@ -41,7 +41,7 @@ import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 
 public class SSOLoginProcessor extends IdentityProcessor {
     private static final String CAS_COOKIE_NAME = "CASTGC";
-    private static Log log = LogFactory.getLog(SSOLoginProcessor.class);
+    private static final Log log = LogFactory.getLog(SSOLoginProcessor.class);
     private static String ticketGrantingTicketId;
     TicketGrantingTicket ticketGrantingTicket;
 
@@ -50,6 +50,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return "SSOLoginProcessor";
     }
 
+    @Override
     public int getPriority() {
         return 2;
     }
@@ -78,7 +79,8 @@ public class SSOLoginProcessor extends IdentityProcessor {
         try {
             url = new URL(serviceUrlFromRequest);
         } catch (MalformedURLException mfe) {
-            throw new FrameworkException("Error occurred while retrieving cas service url from: " + serviceUrlFromRequest, mfe);
+            throw new FrameworkException("Error occurred while retrieving cas service url from: "
+                    + serviceUrlFromRequest, mfe);
         }
 
         String baseUrl = url.getProtocol() + "://" + url.getHost();
@@ -87,7 +89,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         }
 
         if(log.isDebugEnabled()){
-            log.debug("Resolved base url for cas" + baseUrl);
+            log.debug("Resolved base url for cas: " + baseUrl);
         }
         String acsURL = CASSSOUtil.getAcsUrl(baseUrl, casMessageContext.getRequest().getTenantDomain());
         if (StringUtils.equals(baseUrl, acsURL)) {
@@ -95,7 +97,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         }
 
         if(log.isDebugEnabled()){
-            log.info("Resolved acsURL for cas " + acsURL);
+            log.debug("Resolved acsURL for cas: " + acsURL);
         }
 
         if (authnResult.isAuthenticated()) {
@@ -115,10 +117,12 @@ public class SSOLoginProcessor extends IdentityProcessor {
         return builder;
     }
 
+    @Override
     public String getRelyingPartyId() {
         return null;
     }
 
+    @Override
     public String getRelyingPartyId(IdentityMessageContext identityMessageContext) {
         return identityMessageContext.getRelyingPartyId();
     }
