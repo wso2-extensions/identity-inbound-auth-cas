@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
+import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
@@ -48,6 +49,8 @@ import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -124,6 +127,23 @@ public class CASSSOUtil {
                     tenantDomain + "'", e);
         }
         return serviceProvider;
+    }
+
+    public static String getBaseUrl(String serviceProviderUrl) throws FrameworkException {
+        URL url = null;
+
+        try {
+            url = new URL(serviceProviderUrl);
+        } catch (MalformedURLException mfe) {
+            throw new FrameworkException("Error occurred while retrieving cas service url from: " + serviceProviderUrl, mfe);
+        }
+
+        String baseUrl = url.getProtocol() + "://" + url.getHost();
+        if (url.getPort() != -1) {
+            baseUrl = baseUrl + ":" + url.getPort();
+        }
+
+        return baseUrl;
     }
 
     public static String getAcsUrl(String serviceProviderUrl, String tenantDomain) throws CAS2ClientException {

@@ -83,6 +83,14 @@ public class CASServiceValidationResponse extends CASResponse {
                 }
                 String serviceProviderUrl = req.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
                 String serviceTicketId = req.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
+                String baseUrl = CASSSOUtil.getBaseUrl(serviceProviderUrl);
+                String acsURL = CASSSOUtil.getAcsUrl(serviceProviderUrl, context.getRequest().getTenantDomain());
+
+                if(log.isDebugEnabled()){
+                    log.debug("Resolved base URL for cas: " + baseUrl);
+                    log.debug("Resolved acs  URL for cas: " + acsURL);
+                }
+
                 if (serviceProviderUrl == null || serviceProviderUrl.trim().length() == 0 || serviceTicketId == null
                         || serviceTicketId.trim().length() == 0) {
                     throw CAS2ClientException.error("Required request parameters were missing",
@@ -101,7 +109,7 @@ public class CASServiceValidationResponse extends CASResponse {
                         ServiceTicket serviceTicket = CASSSOUtil.consumeServiceTicket(serviceTicketId);
                         AuthenticationResult authenticationResult = serviceTicket.getParentTicket()
                                 .getAuthenticationResult();
-                        ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(serviceProviderUrl,
+                        ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(acsURL,
                                 String.valueOf(messageContext.getRequest().getTenantDomain()));
                         ClaimMapping[] claimMapping = serviceProvider.getClaimConfig().getClaimMappings();
                         String attributesXml = CASSSOUtil.buildAttributesXml(authenticationResult, claimMapping);
