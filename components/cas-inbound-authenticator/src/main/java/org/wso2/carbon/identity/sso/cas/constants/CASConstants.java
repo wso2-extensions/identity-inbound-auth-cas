@@ -21,6 +21,7 @@ public class CASConstants {
     public static final String CAS_CONFIG_NAME = "cas";
     public static final String CAS_FRIENDLY_NAME = "CAS Configuration";
     public static final String CAS_APP_TYPE = "hidden";
+    public static final String CAS_LOGOUT_URI = "logout";
 
     /**
      * CAS specific SSO constants.
