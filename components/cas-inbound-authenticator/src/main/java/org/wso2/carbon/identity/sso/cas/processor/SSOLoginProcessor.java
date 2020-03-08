@@ -74,24 +74,14 @@ public class SSOLoginProcessor extends IdentityProcessor {
         CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
         String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
-        URL url = null;
-
-        try {
-            url = new URL(serviceUrlFromRequest);
-        } catch (MalformedURLException mfe) {
-            throw new FrameworkException("Error occurred while retrieving cas service url from: "
-                    + serviceUrlFromRequest, mfe);
-        }
-
-        String baseUrl = url.getProtocol() + "://" + url.getHost();
-        if (url.getPort() != -1) {
-            baseUrl = baseUrl + ":" + url.getPort();
-        }
+        String baseUrl = CASSSOUtil.getBaseUrl(serviceUrlFromRequest);
 
         if(log.isDebugEnabled()){
             log.debug("Resolved base url for cas: " + baseUrl);
         }
+
         String acsURL = CASSSOUtil.getAcsUrl(baseUrl, casMessageContext.getRequest().getTenantDomain());
+
         if (StringUtils.equals(baseUrl, acsURL)) {
             acsURL = serviceUrlFromRequest;
         }
