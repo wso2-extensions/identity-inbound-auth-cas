@@ -17,12 +17,12 @@
  */
 package org.wso2.carbon.identity.sso.cas.util;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
-import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
 import org.wso2.carbon.identity.application.authentication.framework.model.AuthenticationResult;
 import org.wso2.carbon.identity.application.common.IdentityApplicationManagementException;
 import org.wso2.carbon.identity.application.common.model.ClaimMapping;
@@ -114,36 +114,99 @@ public class CASSSOUtil {
 
     public static ServiceProvider getServiceProviderByUrl(String serviceProviderUrl, String tenantDomain) throws
             CASIdentityException {
+
         ServiceProvider serviceProvider = null;
         ApplicationManagementService appInfo = ApplicationManagementService.getInstance();
+        if (log.isDebugEnabled()) {
+            log.debug("Trying to get service provider using service URL in the request : " + serviceProviderUrl);
+        }
+        String serviceUrlToSearch = getBaseUrl(serviceProviderUrl);
         try {
             if (tenantDomain == null) {
                 tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
             }
-            serviceProvider = appInfo
-                    .getServiceProviderByClientId(serviceProviderUrl, CASConstants.CAS_CONFIG_NAME, tenantDomain);
+            serviceProvider = appInfo.getServiceProviderByClientId(serviceUrlToSearch,
+                    CASConstants.CAS_CONFIG_NAME, tenantDomain);
+            // If returned SP is the default SP, it means an SP for the searched service URL is not found.
+            // Hence we incrementally append path variables to the URL one by one and search an SP by that URL.
+            if (StringUtils.equals(serviceProvider.getApplicationName(), CASConstants.DEFAULT_SP_CONFIG)) {
+                String[] pathSegments = getUrlPathSegments(serviceProviderUrl);
+                if (ArrayUtils.isNotEmpty(pathSegments)) {
+                    // The number of incremental searches need to be done is defined as a constant.
+                    int pathSegmentsToConsiderForSearching = CASConstants.PATH_SEGMENTS_COUNT_FOR_SEARCH;
+                    if (CASConstants.PATH_SEGMENTS_COUNT_FOR_SEARCH > pathSegments.length) {
+                        pathSegmentsToConsiderForSearching = pathSegments.length;
+                    }
+                    int pathSegmentCount = 0;
+                    while (pathSegmentCount < pathSegmentsToConsiderForSearching &&
+                            StringUtils.equals(serviceProvider.getApplicationName(), CASConstants.DEFAULT_SP_CONFIG)) {
+                        // First we append a '/' and search by that URL. Then we append the path component and search
+                        // by that URL.
+                        serviceUrlToSearch = serviceUrlToSearch + "/";
+                        serviceProvider = appInfo.getServiceProviderByClientId(serviceUrlToSearch,
+                                CASConstants.CAS_CONFIG_NAME, tenantDomain);
+                        if (!StringUtils.equals(serviceProvider.getApplicationName(), CASConstants.DEFAULT_SP_CONFIG)) {
+                            break;
+                        }
+                        serviceUrlToSearch = serviceUrlToSearch + pathSegments[pathSegmentCount];
+                        serviceProvider = appInfo.getServiceProviderByClientId(serviceUrlToSearch,
+                                CASConstants.CAS_CONFIG_NAME, tenantDomain);
+                        pathSegmentCount++;
+                    }
+                    // If the correct SP is not yet found, we finally append a '/' and search again.
+                    if (StringUtils.equals(serviceProvider.getApplicationName(), CASConstants.DEFAULT_SP_CONFIG)) {
+                        serviceProvider = appInfo.getServiceProviderByClientId(serviceUrlToSearch + "/",
+                                CASConstants.CAS_CONFIG_NAME, tenantDomain);
+                    }
+                }
+            }
         } catch (IdentityApplicationManagementException e) {
             throw new CASIdentityException("Error occurred while getting service provider in the tenant domain" +
                     tenantDomain + "'", e);
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Service provider retrieved : " + serviceProvider.getApplicationName());
+        }
         return serviceProvider;
     }
 
-    public static String getBaseUrl(String serviceProviderUrl) throws FrameworkException {
-        URL url = null;
+    private static String getBaseUrl(String serviceProviderUrl) throws CASIdentityException {
 
+        URL url = null;
         try {
             url = new URL(serviceProviderUrl);
         } catch (MalformedURLException mfe) {
-            throw new FrameworkException("Error occurred while retrieving cas service url from: " + serviceProviderUrl, mfe);
+            throw new CASIdentityException("Error occurred while retrieving base url from: " + serviceProviderUrl, mfe);
         }
-
         String baseUrl = url.getProtocol() + "://" + url.getHost();
         if (url.getPort() != -1) {
             baseUrl = baseUrl + ":" + url.getPort();
         }
-
         return baseUrl;
+    }
+
+    /**
+     * Return an array of path variables extracted from the service URL.
+     *
+     * @param serviceProviderUrl    Service URL from the request
+     * @return Array of path variables
+     * @throws CASIdentityException
+     */
+    private static String[] getUrlPathSegments(String serviceProviderUrl) throws CASIdentityException {
+
+        URL url = null;
+        try {
+            url = new URL(serviceProviderUrl);
+        } catch (MalformedURLException mfe) {
+            throw new CASIdentityException("Error occurred while retrieving path segments from url: " +
+                    serviceProviderUrl, mfe);
+        }
+        String pathComponent = url.getPath();
+        if (StringUtils.isEmpty(pathComponent)) {
+            return new String[0];
+        }
+        // Path will always have a leading '/' character. Hence we should remove that and split using intermediate '/'s.
+        return pathComponent.substring(1).split("/");
     }
 
     public static String getAcsUrl(String serviceProviderUrl, String tenantDomain) throws CAS2ClientException {
@@ -154,8 +217,8 @@ public class CASSSOUtil {
             serviceProvider = getServiceProviderByUrl(serviceProviderUrl, tenantDomain);
             for (InboundAuthenticationRequestConfig authenticationRequestConfig : serviceProvider
                     .getInboundAuthenticationConfig().getInboundAuthenticationRequestConfigs()) {
-                if (StringUtils.equals(authenticationRequestConfig.getInboundAuthType(), CASConstants.CAS_CONFIG_NAME)
-                        && StringUtils.equals(authenticationRequestConfig.getInboundAuthKey(), serviceProviderUrl)) {
+                if (StringUtils.equals(authenticationRequestConfig.getInboundAuthType(),
+                        CASConstants.CAS_CONFIG_NAME)) {
                     acsUrl = authenticationRequestConfig.getInboundAuthKey();
                     break;
                 }
@@ -166,10 +229,11 @@ public class CASSSOUtil {
         return acsUrl;
     }
 
-    public static boolean isValidAcsUrlForServiceTicket(String serviceProviderUrl, String serviceTicketId) {
-        String acsUrl = CASSSOUtil.getServiceTicket(serviceTicketId).getService();
+    public static boolean isValidAcsUrlForServiceTicket(String registeredAcsUrl, String serviceTicketId) {
+
+        String acsUrlInServiceTicket = CASSSOUtil.getServiceTicket(serviceTicketId).getService();
         boolean isValidAcsUrl = false;
-        if (acsUrl.equals(serviceProviderUrl)) {
+        if (acsUrlInServiceTicket.equals(registeredAcsUrl)) {
             isValidAcsUrl = true;
         }
         return isValidAcsUrl;

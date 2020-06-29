@@ -123,8 +123,8 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
             FrameworkException {
         CASMessageContext messageContext = new CASMessageContext((CASSInitRequest) identityRequest, new
                 HashMap<String, String>());
-        String baseUrl = CASSSOUtil.getBaseUrl(messageContext.getServiceURL());
-        this.relyingParty = CASSSOUtil.getAcsUrl(baseUrl,identityRequest.getTenantDomain());
+        this.relyingParty = CASSSOUtil.getAcsUrl(messageContext.getServiceURL(),
+                messageContext.getRequest().getTenantDomain());
         return buildResponseForFrameworkLogin(messageContext);
     }
 }

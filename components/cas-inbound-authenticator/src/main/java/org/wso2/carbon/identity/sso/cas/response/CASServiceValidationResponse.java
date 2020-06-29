@@ -83,14 +83,6 @@ public class CASServiceValidationResponse extends CASResponse {
                 }
                 String serviceProviderUrl = req.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
                 String serviceTicketId = req.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
-                String baseUrl = CASSSOUtil.getBaseUrl(serviceProviderUrl);
-                String acsURL = CASSSOUtil.getAcsUrl(serviceProviderUrl, context.getRequest().getTenantDomain());
-
-                if(log.isDebugEnabled()){
-                    log.debug("Resolved base URL for cas: " + baseUrl);
-                    log.debug("Resolved acs  URL for cas: " + acsURL);
-                }
-
                 if (serviceProviderUrl == null || serviceProviderUrl.trim().length() == 0 || serviceTicketId == null
                         || serviceTicketId.trim().length() == 0) {
                     throw CAS2ClientException.error("Required request parameters were missing",
@@ -100,7 +92,9 @@ public class CASServiceValidationResponse extends CASResponse {
                 }
                 if (CASSSOUtil.isValidServiceTicket(serviceTicketId)) {
                     // "service" URL argument must match a valid service provider URL
-                    if (!CASSSOUtil.isValidAcsUrlForServiceTicket(serviceProviderUrl, serviceTicketId)) {
+                    String acsUrl = CASSSOUtil.getAcsUrl(serviceProviderUrl,
+                            String.valueOf(messageContext.getRequest().getTenantDomain()));
+                    if (!CASSSOUtil.isValidAcsUrlForServiceTicket(acsUrl, serviceTicketId)) {
                         throw CAS2ClientException.error("ServiceProviderUrl is not valid",
                                 CASConstants.CASErrorConstants.INVALID_SERVICE_CODE, CASResourceReader.getInstance()
                                         .getLocalizedString(CASConstants.CASErrorConstants.INVALID_SERVICE_MESSAGE,
@@ -109,7 +103,7 @@ public class CASServiceValidationResponse extends CASResponse {
                         ServiceTicket serviceTicket = CASSSOUtil.consumeServiceTicket(serviceTicketId);
                         AuthenticationResult authenticationResult = serviceTicket.getParentTicket()
                                 .getAuthenticationResult();
-                        ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(acsURL,
+                        ServiceProvider serviceProvider = CASSSOUtil.getServiceProviderByUrl(serviceProviderUrl,
                                 String.valueOf(messageContext.getRequest().getTenantDomain()));
                         ClaimMapping[] claimMapping = serviceProvider.getClaimConfig().getClaimMappings();
                         String attributesXml = CASSSOUtil.buildAttributesXml(authenticationResult, claimMapping);

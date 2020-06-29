@@ -74,22 +74,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
         String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
-        String baseUrl = CASSSOUtil.getBaseUrl(serviceUrlFromRequest);
-
-        if(log.isDebugEnabled()){
-            log.debug("Resolved base url for cas: " + baseUrl);
-        }
-
-        String acsURL = CASSSOUtil.getAcsUrl(baseUrl, casMessageContext.getRequest().getTenantDomain());
-
-        if (StringUtils.equals(baseUrl, acsURL)) {
-            acsURL = serviceUrlFromRequest;
-        }
-
-        if(log.isDebugEnabled()){
-            log.debug("Resolved acsURL for cas: " + acsURL);
-        }
-
+        String acsURL = CASSSOUtil.getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
         if (authnResult.isAuthenticated()) {
             String ticketGrantingTicketId = getTicketGrantingTicketId(identityRequest);
             if (ticketGrantingTicketId == null) {
@@ -103,7 +88,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
         }
         ((CASLoginResponse.CASLoginResponseBuilder) builder).setCasCookie(casCookie);
         ((CASLoginResponse.CASLoginResponseBuilder) builder).setServiceTicketId(serviceTicketId);
-        ((CASLoginResponse.CASLoginResponseBuilder) builder).setRedirectUrl(acsURL);
+        ((CASLoginResponse.CASLoginResponseBuilder) builder).setRedirectUrl(serviceUrlFromRequest);
         return builder;
     }
 
