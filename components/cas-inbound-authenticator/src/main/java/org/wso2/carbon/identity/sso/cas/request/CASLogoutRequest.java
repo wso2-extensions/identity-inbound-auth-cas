@@ -37,6 +37,9 @@ public class CASLogoutRequest extends CASIdentityRequest {
         super(builder);
     }
 
+    /**
+     * CAS logout request builder class.
+     */
     public static class CASSpInitRequestBuilder extends CASIdentityRequestBuilder {
 
         public CASSpInitRequestBuilder(HttpServletRequest request, HttpServletResponse response) {
