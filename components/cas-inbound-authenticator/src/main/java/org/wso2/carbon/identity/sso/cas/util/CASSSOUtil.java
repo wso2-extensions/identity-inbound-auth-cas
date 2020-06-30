@@ -112,6 +112,16 @@ public class CASSSOUtil {
         CASSSOUtil.httpService = httpService;
     }
 
+    /**
+     * The service provider is registered by either the serviceProviderUrl from request or by a portion of it. Since
+     * the portion is not known beforehand, we search for an SP by the base URL extracted from the serviceProviderUrl.
+     * If an SP is not found, we add one path component at a time and search for an SP.
+     *
+     * @param serviceProviderUrl    Service provider URL from request.
+     * @param tenantDomain          Tenant Domain.
+     * @return                      Service provider if found, default Service Provider if not found.
+     * @throws CASIdentityException CAS Identity Exception.
+     */
     public static ServiceProvider getServiceProviderByUrl(String serviceProviderUrl, String tenantDomain) throws
             CASIdentityException {
 
@@ -127,8 +137,10 @@ public class CASSSOUtil {
             }
             serviceProvider = appInfo.getServiceProviderByClientId(serviceUrlToSearch,
                     CASConstants.CAS_CONFIG_NAME, tenantDomain);
-            // If returned SP is the default SP, it means an SP for the searched service URL is not found.
-            // Hence we incrementally append path variables to the URL one by one and search an SP by that URL.
+            /*
+            If returned SP is the default SP, it means an SP for the searched service URL is not found.
+            Hence we incrementally append path variables to the URL one by one and search an SP by that URL.
+             */
             if (StringUtils.equals(serviceProvider.getApplicationName(), CASConstants.DEFAULT_SP_CONFIG)) {
                 String[] pathSegments = getUrlPathSegments(serviceProviderUrl);
                 if (ArrayUtils.isNotEmpty(pathSegments)) {
@@ -140,8 +152,7 @@ public class CASSSOUtil {
                     int pathSegmentCount = 0;
                     while (pathSegmentCount < pathSegmentsToConsiderForSearching &&
                             StringUtils.equals(serviceProvider.getApplicationName(), CASConstants.DEFAULT_SP_CONFIG)) {
-                        // First we append a '/' and search by that URL. Then we append the path component and search
-                        // by that URL.
+                        // First append a '/' and search by that URL. Then append the path component and search again.
                         serviceUrlToSearch = serviceUrlToSearch + "/";
                         serviceProvider = appInfo.getServiceProviderByClientId(serviceUrlToSearch,
                                 CASConstants.CAS_CONFIG_NAME, tenantDomain);
@@ -165,7 +176,8 @@ public class CASSSOUtil {
                     tenantDomain + "'", e);
         }
         if (log.isDebugEnabled()) {
-            log.debug("Service provider retrieved : " + serviceProvider.getApplicationName());
+            log.debug("Service provider retrieved for URL : " + serviceProviderUrl + " is " +
+                    serviceProvider.getApplicationName());
         }
         return serviceProvider;
     }
@@ -188,9 +200,9 @@ public class CASSSOUtil {
     /**
      * Return an array of path variables extracted from the service URL.
      *
-     * @param serviceProviderUrl    Service URL from the request
-     * @return Array of path variables
-     * @throws CASIdentityException
+     * @param serviceProviderUrl    Service URL from the request.
+     * @return                      Array of path variables.
+     * @throws CASIdentityException CAS Identity Exception.
      */
     private static String[] getUrlPathSegments(String serviceProviderUrl) throws CASIdentityException {
 
@@ -229,6 +241,13 @@ public class CASSSOUtil {
         return acsUrl;
     }
 
+    /**
+     * Checks whether the service URL in service ticket matches the registered service URL.
+     *
+     * @param registeredAcsUrl  Service URL in the CAS inbound authentication configuration.
+     * @param serviceTicketId   Service ticket ID.
+     * @return                  True if registeredAcsUrl matches service URL in the service ticket.
+     */
     public static boolean isValidAcsUrlForServiceTicket(String registeredAcsUrl, String serviceTicketId) {
 
         String acsUrlInServiceTicket = CASSSOUtil.getServiceTicket(serviceTicketId).getService();

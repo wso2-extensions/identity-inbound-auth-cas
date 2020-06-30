@@ -1,12 +1,12 @@
 /*
- *  Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
- *  WSO2 Inc. licenses this file to you under the Apache License,
- *  Version 2.0 (the "License"); you may not use this file except
- *  in compliance with the License.
- *  You may obtain a copy of the License at
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -33,12 +33,14 @@ import org.wso2.carbon.identity.sso.cas.request.CASLogoutRequest;
 import java.util.HashMap;
 
 /**
- *
+ *  Logout request processor.
  */
 public class SSOLogoutProcessor extends IdentityProcessor {
     private static Log log = LogFactory.getLog(SSOLogoutProcessor.class);
 
     /**
+     * Get the name of the processor.
+     *
      * @return the name of processor
      */
     @Override
@@ -48,6 +50,8 @@ public class SSOLogoutProcessor extends IdentityProcessor {
     }
 
     /**
+     * Get the priority of the processor.
+     *
      * @return the priority
      */
     @Override
@@ -57,6 +61,8 @@ public class SSOLogoutProcessor extends IdentityProcessor {
     }
 
     /**
+     * Get the callback path.
+     *
      * @param context        the message context
      * @return the server URL
      */
@@ -67,6 +73,8 @@ public class SSOLogoutProcessor extends IdentityProcessor {
     }
 
     /**
+     * Check if the processor can handle the request.
+     *
      * @param identityRequest       the message context
      * @return true if this possessor could handle request and false if could not
      */
@@ -77,6 +85,8 @@ public class SSOLogoutProcessor extends IdentityProcessor {
     }
 
     /**
+     * Build logout response.
+     *
      * @param identityRequest       the identity message context
      * @return the logout response
      * @throws FrameworkException
@@ -86,13 +96,13 @@ public class SSOLogoutProcessor extends IdentityProcessor {
 
         CASMessageContext messageContext = new CASMessageContext((CASLogoutRequest) identityRequest, new
                 HashMap<String, String>());
-
         FrameworkLogoutResponse.FrameworkLogoutResponseBuilder logoutResponseBuilder = this.buildResponseForFrameworkLogout(messageContext);
-
         return logoutResponseBuilder;
     }
 
     /**
+     * Get relying party ID.
+     *
      * @return null
      */
     @Override
@@ -102,6 +112,8 @@ public class SSOLogoutProcessor extends IdentityProcessor {
     }
 
     /**
+     * Get relying party ID.
+     *
      * @param identityMessageContext        the identity message context
      * @return the id of relying party
      */
@@ -110,5 +122,4 @@ public class SSOLogoutProcessor extends IdentityProcessor {
 
         return identityMessageContext.getRelyingPartyId();
     }
-
 }
