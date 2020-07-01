@@ -182,6 +182,13 @@ public class CASSSOUtil {
         return serviceProvider;
     }
 
+    /**
+     * Extract the base URL component from the service URL in the CAS request.
+     *
+     * @param serviceProviderUrl    Service URL from the CAS request.
+     * @return                      Base URL.
+     * @throws CASIdentityException CAS Identity Exception.
+     */
     private static String getBaseUrl(String serviceProviderUrl) throws CASIdentityException {
 
         URL url = null;

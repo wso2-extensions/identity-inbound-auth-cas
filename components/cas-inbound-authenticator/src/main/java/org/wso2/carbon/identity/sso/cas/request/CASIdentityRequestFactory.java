@@ -70,15 +70,16 @@ public class CASIdentityRequestFactory extends HttpIdentityRequestFactory {
         String serviceProviderUrl = request.getParameter(CASConstants.CASSSOConstants.SERVICE_PROVIDER_ARGUMENT);
         String ticket = request.getParameter(CASConstants.CASSSOConstants.SERVICE_TICKET_ARGUMENT);
         CASIdentityRequest.CASIdentityRequestBuilder builder;
-        if (!StringUtils.isEmpty(serviceProviderUrl)) {
+        if (logout) {
+            builder = new CASLogoutRequest.CASSpInitRequestBuilder(request, response);
+        }
+        else if (StringUtils.isNotEmpty(serviceProviderUrl)) {
             if (StringUtils.isEmpty(ticket)) {
                 builder = new CASSInitRequest.CASSpInitRequestBuilder(request, response);
             } else {
                 builder = new CASServiceValidateRequest.CASServiceValidateRequestBuilder(request, response);
                 ((CASServiceValidateRequest.CASServiceValidateRequestBuilder) builder).setLocale(request);
             }
-        } else if (logout) {
-                builder = new CASLogoutRequest.CASSpInitRequestBuilder(request, response);
         } else {
             throw CAS2ClientException.error("Invalid request message or invalid service url");
         }

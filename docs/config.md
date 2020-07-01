@@ -3,7 +3,7 @@
 This topic provides instructions on how to configure the CAS inbound authenticator and the WSO2 Identity Server and demonstrates this integration using a sample app (cas-client-webapp). 
  
  ````
- CAS Version 2.0.2 Inbound Authenticator is supported by WSO2 Identity Server versions 5.3.0. 
+ CAS Version 2.0.11 Inbound Authenticator is supported by WSO2 Identity Server versions 5.10.0. 
  ````
  
 * [Download and set up CAS](#download-and-set-up-cas)
@@ -19,6 +19,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  * Download the sample CAS client webapp (cas-client-webapp.war) from [https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS](https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS)
  * Download the CAS Version 2.0.2 Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
  * The CAS login URL is required if you want to use it in your own app. It must be: https://<IS_IP>:9443/identity/cas/login
+ * The CAS logout URL is : https://<IS_IP>:9443/identity/cas/logout
 
  ### Configuring cas-client-webapp
  1. Generate Keystore to enable 'https' request in your web container (e.g., Tomcat).
@@ -80,7 +81,16 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  
     ![alt text](images/image3.png)
     
-    >Here service URL refers to the URL of the application that the client is trying to access.
+    >Here service URL refers to the URL of the application/service that the client is trying to access. 
+    This is an identifier for one or more URLs where a service or services are located. For example, if the CAS client application has services
+    located in **https://example.com/myServices/service1** and **https://example.com/myServices/service2**, you may define
+    the service URL as **https://example.com/myServices** because it is the common component for all the service URLs.
+    
+    >NOTE : If you configure 2 CAS inbound authentication configurations for two service providers with Service URL as 
+    **https://example.com/myServices** and **https://example.com/myServices/myService1**, WSO2 IS will always pick the 
+    service provider with Service URL **https://example.com/myServices** when the CAS request's 'service' parameter has URLs
+    starting from **https://example.com/myServices** (i.e. https://example.com/myServices/**).
+                  
     
  7. Go to **Claim Configuration** and click **Define Custom Claim Dialect** to add the requested claims. (This is 
  required to show requested claims as user attributes in the cas-client-webapp; otherwise, no attributes will be 

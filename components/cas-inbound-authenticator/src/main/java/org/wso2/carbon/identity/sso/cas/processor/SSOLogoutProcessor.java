@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.identity.sso.cas.processor;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
@@ -61,15 +62,22 @@ public class SSOLogoutProcessor extends IdentityProcessor {
     }
 
     /**
-     * Get the callback path.
+     * Return the service URL in the request as the callback path if exists, or the default callback path otherwise.
      *
-     * @param context        the message context
-     * @return the server URL
+     * @param context       The message context.
+     * @return              The callback path URL.
      */
     @Override
     public String getCallbackPath(IdentityMessageContext context) {
 
-        return IdentityUtil.getServerURL("/authenticationendpoint/samlsso_logout.do", false, false);
+        CASMessageContext messageContext = new CASMessageContext((CASLogoutRequest) context.getRequest(), new
+                HashMap<String, String>());
+        String callbackPath = messageContext.getServiceURL();
+        if (StringUtils.isEmpty(callbackPath)) {
+            callbackPath = IdentityUtil.getServerURL(CASConstants.CASSSOConstants.DEFAULT_LOGOUT_ENDPOINT,
+                    false, false);
+        }
+        return callbackPath;
     }
 
     /**
