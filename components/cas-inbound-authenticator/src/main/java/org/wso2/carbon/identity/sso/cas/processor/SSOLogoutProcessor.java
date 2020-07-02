@@ -37,6 +37,7 @@ import java.util.HashMap;
  *  Logout request processor.
  */
 public class SSOLogoutProcessor extends IdentityProcessor {
+
     private static Log log = LogFactory.getLog(SSOLogoutProcessor.class);
 
     /**

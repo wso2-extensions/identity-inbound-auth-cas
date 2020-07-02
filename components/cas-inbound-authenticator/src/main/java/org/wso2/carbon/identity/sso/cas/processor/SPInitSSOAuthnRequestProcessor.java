@@ -121,6 +121,7 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
     @Override
     public FrameworkLoginResponse.FrameworkLoginResponseBuilder process(IdentityRequest identityRequest) throws
             FrameworkException {
+
         CASMessageContext messageContext = new CASMessageContext((CASSInitRequest) identityRequest, new
                 HashMap<String, String>());
         this.relyingParty = CASSSOUtil.getAcsUrl(messageContext.getServiceURL(),

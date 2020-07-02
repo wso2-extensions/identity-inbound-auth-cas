@@ -62,6 +62,7 @@ public class SSOLoginProcessor extends IdentityProcessor {
 
     @Override
     public boolean canHandle(IdentityRequest identityRequest) {
+
         IdentityMessageContext context = this.getContextIfAvailable(identityRequest);
         return context != null && context.getRequest() instanceof CASSInitRequest;
     }
