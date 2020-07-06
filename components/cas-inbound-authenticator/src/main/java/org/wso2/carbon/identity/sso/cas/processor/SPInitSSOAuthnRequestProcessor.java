@@ -26,6 +26,7 @@ import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.sso.cas.constants.CASConstants;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.request.CASSInitRequest;
+import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 
 import java.io.UnsupportedEncodingException;
@@ -38,6 +39,7 @@ import java.util.Map;
 public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
 
     private String relyingParty;
+
     @Override
     public String getName() {
         return CASConstants.CAS_CONFIG_NAME;
@@ -119,9 +121,11 @@ public class SPInitSSOAuthnRequestProcessor extends IdentityProcessor {
     @Override
     public FrameworkLoginResponse.FrameworkLoginResponseBuilder process(IdentityRequest identityRequest) throws
             FrameworkException {
+
         CASMessageContext messageContext = new CASMessageContext((CASSInitRequest) identityRequest, new
                 HashMap<String, String>());
-        this.relyingParty = messageContext.getServiceURL();
+        this.relyingParty = CASSSOUtil.getAcsUrl(messageContext.getServiceURL(),
+                messageContext.getRequest().getTenantDomain());
         return buildResponseForFrameworkLogin(messageContext);
     }
 }

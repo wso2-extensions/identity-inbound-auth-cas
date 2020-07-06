@@ -21,6 +21,9 @@ public class CASConstants {
     public static final String CAS_CONFIG_NAME = "cas";
     public static final String CAS_FRIENDLY_NAME = "CAS Configuration";
     public static final String CAS_APP_TYPE = "hidden";
+    public static final String CAS_LOGOUT_URI = "logout";
+    public static final String DEFAULT_SP_CONFIG = "default";
+    public static final int PATH_SEGMENTS_COUNT_FOR_SEARCH = 3;
 
     /**
      * CAS specific SSO constants.
@@ -33,6 +36,7 @@ public class CASConstants {
         public static final String STATUS_MSG = "statusMsg";
         public static final String RESOURCE_BUNDLE = "org.wso2.carbon.identity.sso.cas.i18n.Resources";
         public static final String NOTIFICATION_ENDPOINT = "/authenticationendpoint/generic-exception-response.jsp";
+        public static final String DEFAULT_LOGOUT_ENDPOINT = "/authenticationendpoint/logout.jsp";
     }
     /**
      * CAS constants which are used in error case.

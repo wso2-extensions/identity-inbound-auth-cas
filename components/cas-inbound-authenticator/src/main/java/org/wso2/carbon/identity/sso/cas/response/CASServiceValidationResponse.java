@@ -92,7 +92,9 @@ public class CASServiceValidationResponse extends CASResponse {
                 }
                 if (CASSSOUtil.isValidServiceTicket(serviceTicketId)) {
                     // "service" URL argument must match a valid service provider URL
-                    if (!CASSSOUtil.isValidAcsUrlForServiceTicket(serviceProviderUrl, serviceTicketId)) {
+                    String acsUrl = CASSSOUtil.getAcsUrl(serviceProviderUrl,
+                            String.valueOf(messageContext.getRequest().getTenantDomain()));
+                    if (!CASSSOUtil.isValidAcsUrlForServiceTicket(acsUrl, serviceTicketId)) {
                         throw CAS2ClientException.error("ServiceProviderUrl is not valid",
                                 CASConstants.CASErrorConstants.INVALID_SERVICE_CODE, CASResourceReader.getInstance()
                                         .getLocalizedString(CASConstants.CASErrorConstants.INVALID_SERVICE_MESSAGE,
