@@ -17,7 +17,7 @@ This topic provides instructions on how to configure the CAS inbound authenticat
  * Download WSO2 Identity Server from the [WSO2 Identity Server](https://wso2.com/identity-and-access-management) and install it by following the 
    instructions in the [Installing the Product](https://is.docs.wso2.com/en/latest/setup/installing-the-product) topic.
  * Download the sample CAS client webapp (cas-client-webapp.war) from [https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS](https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS)
- * Download the CAS Version 2.0.12 Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
+ * Download the CAS Version 2.0.13 Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
  * The CAS login URL is required if you want to use it in your own application. It must be: https://<IS_IP>:9443/identity/cas/login
  * The CAS logout URL is : https://<IS_IP>:9443/identity/cas/logout. (Supports "service" parameter for automatic redirect)
 
