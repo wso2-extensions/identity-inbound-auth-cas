@@ -3,7 +3,7 @@
 This topic provides instructions on how to configure the CAS inbound authenticator and the WSO2 Identity Server and demonstrates this integration using a sample app (cas-client-webapp). 
  
  ````
- CAS Version 2.0.12 Inbound Authenticator is supported by WSO2 Identity Server versions 5.10.0. 
+ CAS Version 2.0.13 Inbound Authenticator is supported by WSO2 Identity Server versions 5.10.0. 
  ````
  
 * [Download and set up CAS](#download-and-set-up-cas)
