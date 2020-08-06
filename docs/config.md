@@ -2,10 +2,6 @@
 
 This topic provides instructions on how to configure the CAS inbound authenticator and the WSO2 Identity Server and demonstrates this integration using a sample app (cas-client-webapp). 
  
- ````
- CAS Version 2.0.11 Inbound Authenticator is supported by WSO2 Identity Server versions 5.10.0. 
- ````
- 
 * [Download and set up CAS](#download-and-set-up-cas)
 * [Configuring cas-client-webapp](#configuring-cas-client-webapp)
 * [Deploying CAS artifacts](#deploying-cas-artifacts)
@@ -15,11 +11,11 @@ This topic provides instructions on how to configure the CAS inbound authenticat
 ### Download and set up CAS
 
  * Download WSO2 Identity Server from the [WSO2 Identity Server](https://wso2.com/identity-and-access-management) and install it by following the 
-   instructions in the [Installing the Product](https://docs.wso2.com/display/IS520/Installing+the+Product) topic.
+   instructions in the [Installing the Product](https://is.docs.wso2.com/en/latest/setup/installing-the-product) topic.
  * Download the sample CAS client webapp (cas-client-webapp.war) from [https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS](https://github.com/wso2-docs/IS/tree/master/IS-Connector-Artifacts/CAS)
- * Download the CAS Version 2.0.2 Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
- * The CAS login URL is required if you want to use it in your own app. It must be: https://<IS_IP>:9443/identity/cas/login
- * The CAS logout URL is : https://<IS_IP>:9443/identity/cas/logout
+ * Download the CAS Version 2.x.x Inbound Authenticator JAR from [the store for this authenticator](https://store.wso2.com/store/assets/isconnector/details/593aac68-3139-425c-b9ca-f66a65a0917a).
+ * The CAS login URL is required if you want to use it in your own application. It must be: https://<IS_IP>:9443/identity/cas/login
+ * The CAS logout URL is : https://<IS_IP>:9443/identity/cas/logout. (Supports "service" parameter for automatic redirect)
 
  ### Configuring cas-client-webapp
  1. Generate Keystore to enable 'https' request in your web container (e.g., Tomcat).
@@ -58,26 +54,35 @@ This topic provides instructions on how to configure the CAS inbound authenticat
   
  ### Deploying CAS artifacts
     
-   1. Place the cas-client-webapp.war file into the webapps directory of the web-container (e.g., <TOMCAT_HOME>/webapps). 
-   2. Place the org.wso2.carbon.identity.sso.cas-2.0.2.jar file into the <IS_HOME>/repository/components/dropins 
-   directory and restart the Identity Server.
+   1. Place the `cas-client-webapp.war` file into the `webapps` directory of the web-container (e.g., <TOMCAT_HOME>/webapps). 
+   2. Place the `org.wso2.carbon.identity.sso.cas-x.x.x.jar` file into the `<IS_HOME>/repository/components/dropins` 
+   directory.
+   3. Add the configuration below in `deployment.toml` file resides in `<IS_HOME>/repository/conf` directory.
+       ````
+       [[resource.access_control]]
+       context="/identity(.*)"
+       secure="false"
+       http_method="GET"
+       ````
+   4. [Start/ Restart the WSO2 Identity Server](https://is.docs.wso2.com/en/latest/setup/running-the-product).
+
    
    >If you are using WSO2 Identity Server 5.3.0, make sure to take the **WUM** updated product since this 
    feature needs some core fixes done to the product.
  
  
  ### Configuring the service provider
- Now, you are ready to configure WSO2 Identity Server by adding a [new service provider](https://docs.wso2.com/display/IS530/Adding+and+Configuring+a+Service+Provider).
+ Now, you are ready to configure WSO2 Identity Server by adding a [new service provider](https://is.docs.wso2.com/en/latest/learn/adding-and-configuring-a-service-provider/).
  
- 1. Run [WSO2 Identity Server](https://docs.wso2.com/display/IS530/Running+the+Product).
- 2. Log in to the [management console](https://docs.wso2.com/display/IS530/Getting+Started+with+the+Management+Console) as an administrator.
+ 1. Run [WSO2 Identity Server](https://is.docs.wso2.com/en/latest/setup/running-the-product/).
+ 2. Log in to the [management console](https://is.docs.wso2.com/en/latest/setup/getting-started-with-the-management-console/#getting-started-with-the-management-console) as an administrator.
  3. In the **Identity** section under the Main tab, click **Add** under **Service Providers**.
  4. Enter **cas-client-webapp** in the **Service Provider Name** text box and click **Register**.
  
     ![alt text](images/image4.png)
     
  5. In the **Inbound Authentication Configuration** section, click **CAS Configuration**.
- 6. Configure the **Service Url**: [https://localhost:8443/cas-client-webapp/](https://localhost:8080/cas-sample-java-webapp/). 
+ 6. Configure the **Service Url**: [https://localhost:8443/cas-client-webapp/](https://localhost:8443/cas-client-webapp/). 
  
     ![alt text](images/image3.png)
     
