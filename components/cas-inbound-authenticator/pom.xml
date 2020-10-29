@@ -87,7 +87,7 @@
             <artifactId>encoder</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-codec</groupId>
+            <groupId>org.wso2.orbit.commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
         </dependency>
         <dependency>
