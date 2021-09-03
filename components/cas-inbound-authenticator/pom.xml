@@ -126,7 +126,8 @@
                             org.eclipse.equinox.http.helper,
                             org.joda.time;version="${joda.wso2.osgi.version.range}",
 
-                            org.opensaml.saml.saml2.core.*,
+                            org.opensaml.saml.saml2.core,
+                            org.opensaml.saml.saml2.core.impl,
 
                             org.apache.xerces.util; resolution:=optional,
                             org.apache.http.*; version="${httpcomponents-httpclient.imp.pkg.version.range}",
