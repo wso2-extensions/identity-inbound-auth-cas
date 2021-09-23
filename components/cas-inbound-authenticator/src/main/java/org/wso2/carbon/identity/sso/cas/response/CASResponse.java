@@ -18,8 +18,8 @@
 
 package org.wso2.carbon.identity.sso.cas.response;
 
-import org.opensaml.saml2.core.Response;
-import org.opensaml.saml2.core.impl.ResponseBuilder;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.impl.ResponseBuilder;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityMessageContext;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityResponse;
 

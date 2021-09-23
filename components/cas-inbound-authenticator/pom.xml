@@ -126,14 +126,10 @@
                             org.eclipse.equinox.http.helper,
                             org.joda.time;version="${joda.wso2.osgi.version.range}",
 
-                            org.opensaml.common,
-                            org.opensaml.saml2.core.*,
-                            org.opensaml.xml,
-                            org.opensaml.xml.util,
-                            org.opensaml.xml.validation,
+                            org.opensaml.saml.saml2.core,
+                            org.opensaml.saml.saml2.core.impl,
 
                             org.apache.xerces.util; resolution:=optional,
-                            org.apache.xml.security.*; version="${wss4j.xml.security.imp.pkg.version.range}",
                             org.apache.http.*; version="${httpcomponents-httpclient.imp.pkg.version.range}",
 
                             org.apache.commons.codec.binary; version="${commons-codec.wso2.osgi.version.range}",
