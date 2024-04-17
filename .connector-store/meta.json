@@ -6,5 +6,36 @@
     "description": "The CAS inbound authenticator allows you to enable the single-sign-on for the web services through the WSO2 Identity Server. CAS is a single-sign-on protocol for the web and it is simple and powerful ticket-based protocol.",
     "status": "Active",
     "labels": [],
-    "releases": []
+    "releases": [
+        {
+            "tagName": "2.0.4",
+            "products": [
+                "IS 5.3.0"
+            ]
+        },
+        {
+            "tagName": "2.0.3",
+            "products": [
+                "IS 5.3.0"
+            ]
+        },
+        {
+            "tagName": "2.0.2",
+            "products": [
+                "IS 5.3.0"
+            ]
+        },
+        {
+            "tagName": "2.0.1",
+            "products": [
+                "IS 5.3.0"
+            ]
+        },
+        {
+            "tagName": "1.0.2",
+            "products": [
+                "IS 5.2.0"
+            ]
+        }
+    ]
 }
