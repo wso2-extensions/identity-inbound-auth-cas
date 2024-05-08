@@ -18,10 +18,7 @@
 
 package org.wso2.carbon.identity.sso.cas.processor;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import javax.servlet.http.Cookie;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
@@ -34,7 +31,6 @@ import org.wso2.carbon.identity.sso.cas.configuration.CASConfiguration;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.request.CASSInitRequest;
 import org.wso2.carbon.identity.sso.cas.response.CASLoginResponse;
-import org.wso2.carbon.identity.sso.cas.response.CASResponse;
 import org.wso2.carbon.identity.sso.cas.ticket.ServiceTicket;
 import org.wso2.carbon.identity.sso.cas.ticket.TicketGrantingTicket;
 import org.wso2.carbon.identity.sso.cas.util.CASSSOUtil;
@@ -68,11 +64,11 @@ public class SSOLoginProcessor extends IdentityProcessor {
     }
 
     @Override
-    public CASResponse.CASResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
+    public CASLoginResponse.CASLoginResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
         Cookie casCookie = null;
         String serviceTicketId = null;
         CASMessageContext casMessageContext = (CASMessageContext) getContextIfAvailable(identityRequest);
-        CASResponse.CASResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
+        CASLoginResponse.CASLoginResponseBuilder builder = new CASLoginResponse.CASLoginResponseBuilder(casMessageContext);
         String serviceUrlFromRequest = casMessageContext.getServiceURL();
         AuthenticationResult authnResult = processResponseFromFrameworkLogin(casMessageContext, identityRequest);
         String acsURL = CASSSOUtil.getAcsUrl(serviceUrlFromRequest, casMessageContext.getRequest().getTenantDomain());
@@ -87,9 +83,9 @@ public class SSOLoginProcessor extends IdentityProcessor {
             ServiceTicket serviceTicket = ticketGrantingTicket.grantServiceTicket(acsURL);
             serviceTicketId = serviceTicket.getId();
         }
-        ((CASLoginResponse.CASLoginResponseBuilder) builder).setCasCookie(casCookie);
-        ((CASLoginResponse.CASLoginResponseBuilder) builder).setServiceTicketId(serviceTicketId);
-        ((CASLoginResponse.CASLoginResponseBuilder) builder).setRedirectUrl(serviceUrlFromRequest);
+        builder.setCasCookie(casCookie);
+        builder.setServiceTicketId(serviceTicketId);
+        builder.setRedirectUrl(serviceUrlFromRequest);
         return builder;
     }
 

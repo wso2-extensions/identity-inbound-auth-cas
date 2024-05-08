@@ -27,7 +27,6 @@ import org.wso2.carbon.identity.application.authentication.framework.inbound.Ide
 import org.wso2.carbon.identity.core.util.IdentityUtil;
 import org.wso2.carbon.identity.sso.cas.context.CASMessageContext;
 import org.wso2.carbon.identity.sso.cas.request.CASServiceValidateRequest;
-import org.wso2.carbon.identity.sso.cas.response.CASResponse;
 import org.wso2.carbon.identity.sso.cas.response.CASServiceValidationResponse;
 
 import java.util.HashMap;
@@ -70,15 +69,15 @@ public class CASServiceValidationProcessor extends IdentityProcessor {
     }
 
     @Override
-    public CASResponse.CASResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
+    public CASServiceValidationResponse.CASServiceValidationResponseBuilder process(IdentityRequest identityRequest) throws FrameworkException {
 
         CASMessageContext messageContext = new CASMessageContext((CASServiceValidateRequest) identityRequest, new
                 HashMap<String, String>());
         String redirectURL = messageContext.getServiceURL();
-        CASResponse.CASResponseBuilder builder = new CASServiceValidationResponse.CASServiceValidationResponseBuilder(
+        CASServiceValidationResponse.CASServiceValidationResponseBuilder builder = new CASServiceValidationResponse.CASServiceValidationResponseBuilder(
                 messageContext);
-        ((CASServiceValidationResponse.CASServiceValidationResponseBuilder) builder).buildResponse();
-        ((CASServiceValidationResponse.CASServiceValidationResponseBuilder) builder).setRedirectUrl(redirectURL);
+        builder.buildResponse();
+        builder.setRedirectUrl(redirectURL);
         return builder;
     }
 }
