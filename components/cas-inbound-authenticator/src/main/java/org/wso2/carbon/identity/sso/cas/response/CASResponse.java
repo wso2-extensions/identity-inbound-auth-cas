@@ -18,37 +18,19 @@
 
 package org.wso2.carbon.identity.sso.cas.response;
 
-import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.core.impl.ResponseBuilder;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityMessageContext;
 import org.wso2.carbon.identity.application.authentication.framework.inbound.IdentityResponse;
 
 public class CASResponse extends IdentityResponse {
 
-    private Response response;
-
     protected CASResponse(IdentityResponseBuilder builder) {
         super(builder);
-        this.response = ((CASResponseBuilder) builder).response;
     }
 
-    public Response getResponse() {
-        return this.response;
-    }
-
-    public static class CASResponseBuilder extends IdentityResponseBuilder {
-
-        private Response response;
+    public static abstract class CASResponseBuilder extends IdentityResponseBuilder {
 
         public CASResponseBuilder(IdentityMessageContext context) {
             super(context);
-            ResponseBuilder responseBuilder = new ResponseBuilder();
-            this.response = responseBuilder.buildObject();
-        }
-
-        public CASResponseBuilder setResponse(Response response) {
-            this.response = response;
-            return this;
         }
     }
 }
