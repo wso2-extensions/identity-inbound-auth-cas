@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2.carbon.extension.identity.authenticator.inbound.cas</groupId>
         <artifactId>identity-inbound-auth-cas</artifactId>
-        <version>2.0.22-SNAPSHOT</version>
+        <version>2.0.22</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.wso2.carbon.extension.identity.authenticator.inbound.cas</groupId>
             <artifactId>org.wso2.carbon.extension.identity.sso.cas</artifactId>
-            <version>2.0.22-SNAPSHOT</version>
+            <version>2.0.22</version>
         </dependency>
     </dependencies>
     <build>
