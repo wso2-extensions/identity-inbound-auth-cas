@@ -8,20 +8,20 @@
     "labels": [],
     "releases": [
         {
-            "tagName": "2.0.18",
+            "tagName": "v2.0.18",
             "products": [
                 "IS 5.11.0",
                 "IS 6.0.0"
             ]
         },
         {
-            "tagName": "2.0.13",
+            "tagName": "v2.0.13",
             "products": [
                 "IS 5.10.0"
             ]
         },
         {
-            "tagName": "2.0.4",
+            "tagName": "v2.0.4",
             "products": [
                 "IS 5.7.0",
                 "IS 5.8.0",
@@ -29,7 +29,7 @@
             ]
         },
         {
-            "tagName": "2.0.3",
+            "tagName": "v2.0.3",
             "products": [
                 "IS 5.7.0",
                 "IS 5.8.0",
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "tagName": "2.0.2",
+            "tagName": "v2.0.2",
             "products": [
                 "IS 5.7.0",
                 "IS 5.8.0",
