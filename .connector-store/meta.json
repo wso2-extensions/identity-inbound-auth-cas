@@ -1,0 +1,48 @@
+{
+    "name": "CAS",
+    "owner": "WSO2",
+    "category": "Inbound authenticator",
+    "documentationUrl": "https://github.com/wso2-extensions/identity-inbound-auth-cas/blob/master/docs/config.md",
+    "description": "The CAS inbound authenticator allows you to enable the single-sign-on for the web services through the WSO2 Identity Server. CAS is a single-sign-on protocol for the web and it is simple and powerful ticket-based protocol.",
+    "status": "Active",
+    "labels": [],
+    "releases": [
+        {
+            "tagName": "v2.0.18",
+            "products": [
+                "IS 5.11.0",
+                "IS 6.0.0"
+            ]
+        },
+        {
+            "tagName": "v2.0.13",
+            "products": [
+                "IS 5.10.0"
+            ]
+        },
+        {
+            "tagName": "v2.0.4",
+            "products": [
+                "IS 5.7.0",
+                "IS 5.8.0",
+                "IS 5.9.0"
+            ]
+        },
+        {
+            "tagName": "v2.0.3",
+            "products": [
+                "IS 5.7.0",
+                "IS 5.8.0",
+                "IS 5.9.0"
+            ]
+        },
+        {
+            "tagName": "v2.0.2",
+            "products": [
+                "IS 5.7.0",
+                "IS 5.8.0",
+                "IS 5.9.0"
+            ]
+        }
+    ]
+}
